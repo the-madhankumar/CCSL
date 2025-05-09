@@ -1,9 +1,9 @@
 class Bowling {
-  final int overType; // 1, 2, or 3
+  int overType; // 1, 2, or 3
   bool fieldShiftUsed = false;
   bool defenseActive = false;
   int defenseBallsRemaining = 0;
-  bool powerBlockerUsed = false;
+  int powerBlockerUses = 0;
   bool trapUsed = false;
   List<int> trapCards = [];
   List<int> recentBalls = [];
@@ -17,7 +17,7 @@ class Bowling {
     if (lastBall == currentBall) {
       noBallCount++;
       isFreeHit = true;
-      return true; 
+      return true;
     }
     isFreeHit = false;
     return false;
@@ -43,7 +43,7 @@ class Bowling {
       if (batsmanRun == 4 || batsmanRun == 6) {
         return (batsmanRun / 2).floor();
       } else if (batsmanRun == 0 || batsmanRun == 1) {
-        return batsmanRun * 2; 
+        return batsmanRun * 2;
       }
     }
 
@@ -52,20 +52,29 @@ class Bowling {
 
   // 4.3 – Power Blocker Card
   int applyPowerBlocker(int batsmanRun) {
-    if (overType >= 2 &&
-        !powerBlockerUsed &&
+    int allowedUses = 0;
+
+    if (overType == 3) {
+      allowedUses = 1;
+    } else if (overType > 3 && overType <= 10) {
+      allowedUses = 2;
+    } else if (overType > 10) {
+      allowedUses = 3;
+    }
+
+    if (powerBlockerUses < allowedUses &&
         (batsmanRun == 4 || batsmanRun == 6)) {
-      powerBlockerUsed = true;
+      powerBlockerUses++;
       return 0;
     }
+
     return batsmanRun;
   }
 
   // 4.4 – Economy Reward Logic
   bool checkEconomyReward(List<int> last3Runs) {
     if (last3Runs.length < 3) return false;
-    int sum =
-        last3Runs.sublist(last3Runs.length - 3).reduce((a, b) => a + b);
+    int sum = last3Runs.sublist(last3Runs.length - 3).reduce((a, b) => a + b);
     return sum <= 4;
   }
 
@@ -94,7 +103,7 @@ class Bowling {
   }
 
   bool isValidFieldShiftCard(int card) {
-    return card % 2 == 0; 
+    return card % 2 == 0;
   }
 }
 
