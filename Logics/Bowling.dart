@@ -17,7 +17,7 @@ class Bowling {
     if (lastBall == currentBall) {
       noBallCount++;
       isFreeHit = true;
-      return true; // It's a no-ball
+      return true; 
     }
     isFreeHit = false;
     return false;
@@ -41,9 +41,9 @@ class Bowling {
       }
 
       if (batsmanRun == 4 || batsmanRun == 6) {
-        return (batsmanRun / 2).floor(); // Halve 4 or 6
+        return (batsmanRun / 2).floor();
       } else if (batsmanRun == 0 || batsmanRun == 1) {
-        return batsmanRun * 2; // Double 0 or 1
+        return batsmanRun * 2; 
       }
     }
 
@@ -97,3 +97,20 @@ class Bowling {
     return card % 2 == 0; 
   }
 }
+
+
+// Usage Summary:
+
+// checkNoBall(previousBall, currentBall) returns true/false if no-ball.
+
+// applyDefenseEffect(run) returns modified run after applying Defense.
+
+// applyPowerBlocker(run) nullifies first 4 or 6 per game.
+
+// checkEconomyReward(last3Runs) returns true if ≤4 runs in last 3 balls.
+
+// checkTrapOut(batsmanCard) returns true if batsman triggers trap.
+
+// activateFieldShift() enables field shift.
+
+// isValidFieldShiftCard(card) checks whether batsman move is valid.
