@@ -70,6 +70,10 @@ flutter:
     - assets/IMAGES/settingsicon.png
     - assets/IMAGES/player.png
     - assets/IMAGES/bot.png
+    - assets/IMAGES/flagpng.png
+    - assets/IMAGES/MOMpng.png
+    - assets/IMAGES/dot.png
+    - assets/IMAGES/shock.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

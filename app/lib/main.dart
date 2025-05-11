@@ -1,6 +1,8 @@
+import 'package:app/GamePage/page.dart';
 import 'package:app/StartGame/addplayer.dart';
 import 'package:app/StartGame/page.dart';
 import 'package:app/StartGame/custom.dart';
+import 'package:app/Result/page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const StartGame(),
+      home: const GamePage(),
     );
   }
 }

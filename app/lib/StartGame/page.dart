@@ -7,11 +7,11 @@ class StartGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width; // Get screen width
+    double screenWidth = MediaQuery.of(context).size.width; 
     double screenHeight =
-        MediaQuery.of(context).size.height; // Get screen height
+        MediaQuery.of(context).size.height; 
     double fontSize =
-        screenWidth * 0.07; // Make font size responsive based on screen width
+        screenWidth * 0.07; 
 
     return Scaffold(
       body: Container(
@@ -24,8 +24,8 @@ class StartGame extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: screenHeight * 0.15, // Height based on screen height
-                  width: screenWidth * 0.9, // Width based on screen width
+                  height: screenHeight * 0.15, 
+                  width: screenWidth * 0.9, 
                   decoration: BoxDecoration(
                     color: const Color(0x40D9D9D9),
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
