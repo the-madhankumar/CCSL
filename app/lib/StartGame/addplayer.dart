@@ -1,9 +1,8 @@
-import 'package:app/StartGame/addplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Custom extends StatelessWidget {
-  const Custom({Key? key}) : super(key: key);
+class Addplayer extends StatelessWidget {
+  const Addplayer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +40,7 @@ class Custom extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Custom',
+                            'Add Player',
                             style: GoogleFonts.judson(
                               fontSize: screenHeight * 0.06,
                               color: const Color(0xFFF9DDDD),
@@ -56,103 +55,52 @@ class Custom extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: screenHeight * 0.09),
-            Padding(
-              padding: const EdgeInsets.only(left: 48.0),
-              child: Row(
-                children: [
-                  _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: 'Overs',
-                    color: const Color(0xFFD13737),
-                    height_: 0.10,
-                    width_: 0.40,
-                    font_size: 0.10,
-                  ),
-                  SizedBox(width: screenWidth * 0.12),
-                  _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: '',
-                    color: const Color(0xFFD19837),
-                    height_: 0.10,
-                    width_: 0.25,
-                    font_size: 0.10,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: screenHeight * 0.03),
-            Padding(
-              padding: const EdgeInsets.only(left: 48.0),
-              child: Row(
-                children: [
-                  _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: 'Wickets',
-                    color: const Color(0xFFD13737),
-                    height_: 0.10,
-                    width_: 0.40,
-                    font_size: 0.10,
-                  ),
-                  SizedBox(width: screenWidth * 0.12),
-                  _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: '',
-                    color: const Color(0xFFD19837),
-                    height_: 0.10,
-                    width_: 0.25,
-                    font_size: 0.10,
-                  ),
-                ],
-              ),
-            ),
             SizedBox(height: screenHeight * 0.05),
-            Padding(
-              padding: EdgeInsets.only(left: 48.0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap:
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Addplayer()),
-                        ),
-                    child: _bigContainer(
-                      screenWidth,
-                      screenHeight,
-                      text: 'Add',
-                      color: const Color(0xFFD13737),
-                      height_: 0.10,
-                      width_: 0.35,
-                      font_size: 0.10,
-                      imagePath: 'IMAGES/player.png',
-                    ),
-                  ),
-                  SizedBox(width: screenWidth * 0.07),
-                  _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: 'Bot',
-                    color: const Color(0xFFD13737),
-                    height_: 0.10,
-                    width_: 0.35,
-                    font_size: 0.10,
-                    imagePath: 'IMAGES/bot.png',
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: screenHeight * 0.15),
             Padding(
               padding: EdgeInsets.only(left: screenWidth * 0.001),
               child: _bigContainer(
                 screenWidth,
                 screenHeight,
-                text: 'START GAME',
+                text: 'Create Room',
+                color: const Color(0xFFD13737),
+                height_: 0.10,
+                width_: 0.85,
+                font_size: 0.12,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.05),
+            Padding(
+              padding: EdgeInsets.only(left: screenWidth * 0.001),
+              child: _bigContainer(
+                screenWidth,
+                screenHeight,
+                text: '',
+                color: const Color(0xFFD13737),
+                height_: 0.10,
+                width_: 0.85,
+                font_size: 0.12,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.05),
+            Padding(
+              padding: EdgeInsets.only(left: screenWidth * 0.01),
+              child: _bigContainer(
+                screenWidth,
+                screenHeight,
+                text: 'Accept',
+                color: const Color(0xFFD13737),
+                height_: 0.10,
+                width_: 0.30,
+                font_size: 0.09,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.20),
+            Padding(
+              padding: EdgeInsets.only(left: screenWidth * 0.001),
+              child: _bigContainer(
+                screenWidth,
+                screenHeight,
+                text: 'Start Game',
                 color: const Color(0xFFD13737),
                 height_: 0.10,
                 width_: 0.85,

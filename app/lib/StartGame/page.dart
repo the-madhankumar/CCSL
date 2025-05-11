@@ -1,3 +1,4 @@
+import 'package:app/StartGame/custom.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -97,14 +98,21 @@ class StartGame extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.only(left: screenWidth * 0.001),
-              child: _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: 'Custom',
-                color: const Color(0xFFD19837),
-                height_: 0.10,
-                width_: 0.85,
-                font_size: 0.12,
+              child: GestureDetector(
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Custom()),
+                    ),
+                child: _bigContainer(
+                  screenWidth,
+                  screenHeight,
+                  text: 'Custom',
+                  color: const Color(0xFFD19837),
+                  height_: 0.10,
+                  width_: 0.85,
+                  font_size: 0.12,
+                ),
               ),
             ),
             SizedBox(height: screenHeight * 0.05),
