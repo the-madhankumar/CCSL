@@ -17,7 +17,7 @@ class Custom extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: screenHeight * 0.1),
             Align(
               alignment: Alignment.center,
               child: Padding(
@@ -31,7 +31,7 @@ class Custom extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2.0),
                         child: Image.asset(
-                          'IMAGES/settingsicon.png',
+                          'assets/IMAGES/settingsicon.png',
                           height: screenHeight * 0.5,
                           width: screenHeight * 0.1,
                           fit: BoxFit.contain,
@@ -129,7 +129,7 @@ class Custom extends StatelessWidget {
                       height_: 0.10,
                       width_: 0.35,
                       font_size: 0.10,
-                      imagePath: 'IMAGES/player.png',
+                      imagePath: 'assets/IMAGES/player.png',
                     ),
                   ),
                   SizedBox(width: screenWidth * 0.07),
@@ -141,7 +141,7 @@ class Custom extends StatelessWidget {
                     height_: 0.10,
                     width_: 0.35,
                     font_size: 0.10,
-                    imagePath: 'IMAGES/bot.png',
+                    imagePath: 'assets/IMAGES/bot.png',
                   ),
                 ],
               ),

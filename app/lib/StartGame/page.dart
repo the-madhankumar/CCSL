@@ -39,7 +39,9 @@ class StartGame extends StatelessWidget {
                         child: Image(
                           height: screenHeight * 0.12,
                           width: screenWidth * 0.25,
-                          image: AssetImage('IMAGES/removed-background.png'),
+                          image: AssetImage(
+                            'assets/IMAGES/removed-background.png',
+                          ),
                         ),
                       ),
                       Container(

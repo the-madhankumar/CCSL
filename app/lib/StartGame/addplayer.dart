@@ -16,7 +16,7 @@ class Addplayer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: screenHeight * 0.1),
             Align(
               alignment: Alignment.center,
               child: Padding(
@@ -30,7 +30,7 @@ class Addplayer extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2.0),
                         child: Image.asset(
-                          'IMAGES/settingsicon.png',
+                          'assets/IMAGES/settingsicon.png',
                           height: screenHeight * 0.5,
                           width: screenHeight * 0.1,
                           fit: BoxFit.contain,
