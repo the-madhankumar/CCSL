@@ -1,3 +1,4 @@
+import 'package:app/Result/page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -131,15 +132,31 @@ class _GamePageState extends State<GamePage> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: screenWidth * 0.13),
-                  child:Row(
-                  children: [
-                    _CircleContainer(screenWidth, screenHeight, 'assets/IMAGES/shock.png'),
-                    SizedBox(width: screenWidth * 0.3),
-                    _CircleContainer(screenWidth, screenHeight, 'assets/IMAGES/dot.png'),
-                  ],
+                  child: Row(
+                    children: [
+                      _CircleContainer(
+                        screenWidth,
+                        screenHeight,
+                        'assets/IMAGES/shock.png',
+                      ),
+                      SizedBox(width: screenWidth * 0.3),
+                      GestureDetector(
+                        onTap:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResultPage(),
+                              ),
+                            ),
+                        child: _CircleContainer(
+                          screenWidth,
+                          screenHeight,
+                          'assets/IMAGES/dot.png',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                ),
-                
               ],
             ),
           ),
@@ -246,7 +263,11 @@ Widget _ContainerSet(double screenWidth, double screenHeight) {
   );
 }
 
-Widget _CircleContainer(double screenWidth, double screenHeight, String? imagePath) {
+Widget _CircleContainer(
+  double screenWidth,
+  double screenHeight,
+  String? imagePath,
+) {
   return Container(
     height: screenHeight * 0.2,
     width: screenWidth * 0.2,
@@ -254,14 +275,10 @@ Widget _CircleContainer(double screenWidth, double screenHeight, String? imagePa
       color: const Color(0xFFD19837),
       shape: BoxShape.circle,
     ),
-    padding: const EdgeInsets.all(6), 
-    child: imagePath != null && imagePath.isNotEmpty
-        ? ClipOval(
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.contain,
-            ),
-          )
-        : const SizedBox.shrink(), 
+    padding: const EdgeInsets.all(6),
+    child:
+        imagePath != null && imagePath.isNotEmpty
+            ? ClipOval(child: Image.asset(imagePath, fit: BoxFit.contain))
+            : const SizedBox.shrink(),
   );
 }

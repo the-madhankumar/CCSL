@@ -1,3 +1,4 @@
+import 'package:app/GamePage/page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -95,16 +96,23 @@ class Addplayer extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.20),
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.001),
-              child: _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: 'Start Game',
-                color: const Color(0xFFD13737),
-                height_: 0.10,
-                width_: 0.85,
-                font_size: 0.12,
+            GestureDetector(
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GamePage()),
+                  ),
+              child: Padding(
+                padding: EdgeInsets.only(left: screenWidth * 0.001),
+                child: _bigContainer(
+                  screenWidth,
+                  screenHeight,
+                  text: 'Start Game',
+                  color: const Color(0xFFD13737),
+                  height_: 0.10,
+                  width_: 0.85,
+                  font_size: 0.12,
+                ),
               ),
             ),
           ],
