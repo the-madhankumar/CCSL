@@ -18,6 +18,9 @@ class StartGame extends StatelessWidget {
                   height: 20,
                   width: 500,
                   color: const Color.fromARGB(78, 0, 0, 0),
+                  child: Image(
+                    image: AssetImage('IMAGES/removed-background.png'),
+                  ),
                 ),
               ),
             ),
