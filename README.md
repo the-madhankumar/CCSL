@@ -14,7 +14,7 @@ Players compete as **batsman and bowler** using cards numbered `0, 1, 2, 3, 4, 6
 
 ### 📱 UI Preview
 
-<img src="[UI.png](https://github.com/the-madhankumar/CCSL/blob/main/INFO/DOCS/UI.png)" alt="CCSL UI" width="600"/>
+![CCSL UI](https://github.com/the-madhankumar/CCSL/blob/main/INFO/DOCS/UI.png)
 
 ---
 
@@ -68,7 +68,7 @@ Players compete as **batsman and bowler** using cards numbered `0, 1, 2, 3, 4, 6
 
 ### 📘 Rule Book
 
-Official rule book is available here: [📖 CCSL\_RULE\_BOOK.pdf](./CCSL%20RULE%20BOOK.pdf)
+Official rule book is available here: [📖 View Official Rule Book (PDF)](https://github.com/the-madhankumar/CCSL/blob/main/INFO/DOCS/CCSL%20RULE%20BOOK.pdf)
 
 Includes detailed rules for:
 
