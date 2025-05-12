@@ -243,7 +243,6 @@ Widget TextContainer(
   String text = '',
   Color color = const Color(0xFFD19837),
   double font_size = 0,
-  String? imagePath,
   TextEditingController? Controll,
 }) {
   return Container(
@@ -263,38 +262,19 @@ Widget TextContainer(
       ],
     ),
     child: Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (imagePath != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 1.0),
-              child: Image.asset(
-                imagePath,
-                height: screenHeight * 0.1,
-                width: screenWidth * 0.1,
-                fit: BoxFit.contain,
-              ),
-            ),
-          Expanded(
-            child: TextField(
-              controller: Controll,
-              style: GoogleFonts.judson(
-                fontSize: screenWidth * font_size,
-                color: const Color(0xFFD9D9D9),
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintStyle: GoogleFonts.judson(
-                  fontSize: screenWidth * font_size,
-                  color: const Color(0xFFD9D9D9),
-                ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
-              ),
-            ),
+      child: Expanded(
+        child: TextField(
+          controller: Controll,
+          style: GoogleFonts.judson(
+            fontSize: screenWidth * font_size,
+            color: const Color(0xFFD9D9D9),
           ),
-        ],
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            
+            contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
+          ),
+        ),
       ),
     ),
   );
