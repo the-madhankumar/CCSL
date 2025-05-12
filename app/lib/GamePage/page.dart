@@ -4,12 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({Key? key}) : super(key: key);
-
   @override
   State<GamePage> createState() => _GamePageState();
 }
 
 class _GamePageState extends State<GamePage> {
+  String card = '';
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -45,7 +45,7 @@ class _GamePageState extends State<GamePage> {
                       _bigContainer(
                         screenWidth,
                         screenHeight,
-                        text: '',
+                        text: card,
                         color: const Color(0xFFD13737),
                         height_: 0.20,
                         width_: 0.35,
@@ -70,7 +70,13 @@ class _GamePageState extends State<GamePage> {
                             height_: 0.07,
                             width_: 0.21,
                             font_size: 0.10,
+                            onTap: () {
+                              setState(() {
+                                card = '1';
+                              });
+                            },
                           ),
+
                           SizedBox(width: screenWidth * 0.05),
                           _bigContainer(
                             screenWidth,
@@ -80,6 +86,11 @@ class _GamePageState extends State<GamePage> {
                             height_: 0.07,
                             width_: 0.21,
                             font_size: 0.10,
+                            onTap: () {
+                              setState(() {
+                                card = '2';
+                              });
+                            },
                           ),
                           SizedBox(width: screenWidth * 0.05),
                           _bigContainer(
@@ -90,6 +101,11 @@ class _GamePageState extends State<GamePage> {
                             height_: 0.07,
                             width_: 0.21,
                             font_size: 0.10,
+                            onTap: () {
+                              setState(() {
+                                card = '3';
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -104,6 +120,11 @@ class _GamePageState extends State<GamePage> {
                             height_: 0.07,
                             width_: 0.21,
                             font_size: 0.10,
+                            onTap: () {
+                              setState(() {
+                                card = '4';
+                              });
+                            },
                           ),
                           SizedBox(width: screenWidth * 0.05),
                           _bigContainer(
@@ -114,6 +135,11 @@ class _GamePageState extends State<GamePage> {
                             height_: 0.07,
                             width_: 0.21,
                             font_size: 0.10,
+                            onTap: () {
+                              setState(() {
+                                card = '5';
+                              });
+                            },
                           ),
                           SizedBox(width: screenWidth * 0.05),
                           _bigContainer(
@@ -124,6 +150,11 @@ class _GamePageState extends State<GamePage> {
                             height_: 0.07,
                             width_: 0.21,
                             font_size: 0.10,
+                            onTap: () {
+                              setState(() {
+                                card = '6';
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -175,30 +206,34 @@ Widget _bigContainer(
   double width_ = 0,
   double font_size = 0,
   Border? border = null,
+  VoidCallback? onTap,
 }) {
-  return Container(
-    height: screenHeight * height_,
-    width: screenWidth * width_,
-    decoration: BoxDecoration(
-      color: color,
-      border: border,
-      borderRadius: const BorderRadius.all(Radius.circular(25)),
-      boxShadow: [
-        BoxShadow(
-          // ignore: deprecated_member_use
-          color: Colors.black.withOpacity(0.3),
-          spreadRadius: 2,
-          blurRadius: 5,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Center(
-      child: Text(
-        text,
-        style: GoogleFonts.judson(
-          fontSize: screenWidth * font_size,
-          color: const Color(0xFFD9D9D9),
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      height: screenHeight * height_,
+      width: screenWidth * width_,
+      decoration: BoxDecoration(
+        color: color,
+        border: border,
+        borderRadius: const BorderRadius.all(Radius.circular(25)),
+        boxShadow: [
+          BoxShadow(
+            // ignore: deprecated_member_use
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          text,
+          style: GoogleFonts.judson(
+            fontSize: screenWidth * font_size,
+            color: const Color(0xFFD9D9D9),
+          ),
         ),
       ),
     ),
