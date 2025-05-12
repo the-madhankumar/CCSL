@@ -49,7 +49,7 @@ class _GamePageState extends State<GamePage> {
                         color: const Color(0xFFD13737),
                         height_: 0.20,
                         width_: 0.35,
-                        font_size: 0.12,
+                        font_size: 0.3,
                         border: Border.all(color: Color(0xFF715018), width: 7),
                       ),
                     ],
