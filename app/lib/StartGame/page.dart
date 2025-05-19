@@ -1,6 +1,7 @@
 import 'package:app/StartGame/About.dart';
 import 'package:app/StartGame/custom.dart';
 import 'package:app/StartGame/rule.dart';
+import 'package:app/StartGame/toss.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -135,14 +136,22 @@ class StartGame extends StatelessWidget {
                   SizedBox(height: screenHeight * 0.05),
                   Padding(
                     padding: EdgeInsets.only(left: screenWidth * 0.001),
-                    child: _bigContainer(
-                      screenWidth,
-                      screenHeight,
-                      text: 'START GAME',
-                      color: const Color(0xFFD13737),
-                      height_: 0.10,
-                      width_: 0.85,
-                      font_size: 0.12,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CoinToss()),
+                        );
+                      },
+                      child: _bigContainer(
+                        screenWidth,
+                        screenHeight,
+                        text: 'START GAME',
+                        color: const Color(0xFFD13737),
+                        height_: 0.10,
+                        width_: 0.85,
+                        font_size: 0.12,
+                      ),
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.05),
@@ -154,7 +163,9 @@ class StartGame extends StatelessWidget {
                           onTap:
                               () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => About()),
+                                MaterialPageRoute(
+                                  builder: (context) => About(),
+                                ),
                               ),
                           child: _bigContainer(
                             screenWidth,
