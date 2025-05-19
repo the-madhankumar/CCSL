@@ -2,6 +2,8 @@
 
 Cricket Card Strategy League (CCSL) is a **turn-based strategy cricket game** built in **Flutter** that fuses cricket gameplay with card-based logic. Designed to be quick, competitive, and smart — it's more than a game: it's a mental match.
 
+# Project Status : ---IN PROGRESS---
+
 ---
 
 ### 🎮 Game Overview
