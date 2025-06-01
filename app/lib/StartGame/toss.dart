@@ -1,186 +1,116 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
+import '../GamePage/page.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Coin Toss',
-      home: CoinToss(),
-    );
-  }
-}
-
-class CoinToss extends StatefulWidget {
-  const CoinToss({super.key});
+class FlipTossPage extends StatefulWidget {
+  const FlipTossPage({super.key});
 
   @override
-  State<CoinToss> createState() => _CoinTossState();
+  State<FlipTossPage> createState() => _FlipTossPageState();
 }
 
-class _CoinTossState extends State<CoinToss>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-  bool _isHeads = true;
-  bool _isAnimating = false;
-  String? _userChoice; // 'Heads' or 'Tails'
-  String? _resultMessage;
+class _FlipTossPageState extends State<FlipTossPage> {
+  String _imageAsset = "assets/IMAGES/head.png";
+  final Duration oneSec = const Duration(milliseconds: 60);
+  final int numberOfFlips = 8;
+  int _flipCount = 0;
+  late Timer _flipTimer;
+  bool _isFlipping = true;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  String _finalResult = "head";
 
   @override
   void initState() {
     super.initState();
+    _playSound();
+    _startFlipAnimation();
+  }
 
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
+  void _playSound() async {
+    await _audioPlayer.play(AssetSource('audio/coinflip1.mp3'));
+  }
 
-    _animation =
-        Tween(begin: 0.0, end: pi).animate(_animationController)
-          ..addListener(() {
-            setState(() {});
-          })
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              _isHeads = Random().nextBool();
-              String actualResult = _isHeads ? 'Heads' : 'Tails';
-              setState(() {
-                _isAnimating = false;
-                _resultMessage =
-                    (_userChoice == actualResult)
-                        ? 'You guessed right! It\'s $actualResult.'
-                        : 'Oops! You guessed $_userChoice, but it\'s $actualResult.';
-              });
-              _animationController.reset();
-            }
-          });
+  void _startFlipAnimation() {
+    final Random rand = Random();
+    _finalResult = rand.nextBool() ? "head" : "tailsmini";
+
+    _flipTimer = Timer.periodic(oneSec, (timer) {
+      setState(() {
+        _imageAsset = _imageAsset.contains("head")
+            ? "assets/IMAGES/tailsmini.png"
+            : "assets/IMAGES/head.png";
+
+        _flipCount++;
+        if (_flipCount >= numberOfFlips * 2) {
+          _flipTimer.cancel();
+          _isFlipping = false;
+          _imageAsset = _finalResult == "head"
+              ? "assets/IMAGES/head.png"
+              : "assets/IMAGES/tailsmini.png";
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _flipTimer.cancel();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
-  void _startAnimation(String choice) {
-    if (!_isAnimating) {
-      setState(() {
-        _isAnimating = true;
-        _userChoice = choice;
-        _resultMessage = null;
-      });
-      _animationController.forward();
-    }
-  }
-
-  Widget _buildCoin() {
-    return Transform(
-      transform: Matrix4.rotationY(_animation.value),
-      alignment: Alignment.center,
-      child: Image.asset(
-        _isHeads ? 'assets/IMAGES/head.jpeg' : 'assets/IMAGES/tail.jpeg',
-        width: 150,
-        height: 150,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Coin Toss')),
-      body: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(20),
+      backgroundColor: const Color(0xFFD13737), // Set background color here
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _isAnimating
-                ? _buildCoin()
-                : Column(
-                  children: [
-                    Text(
-                      'Choose Heads or Tails',
-                      style: TextStyle(fontSize: 22),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => _startAnimation('Heads'),
-                          child: Text('Heads'),
-                        ),
-                        const SizedBox(width: 20),
-                        ElevatedButton(
-                          onPressed: () => _startAnimation('Tails'),
-                          child: Text('Tails'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    if (_resultMessage != null) ...[
-                      Text(
-                        _resultMessage!,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              _resultMessage!.contains('right')
-                                  ? Colors.green
-                                  : Colors.red,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => StartGamePage(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 30,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: Text(
-                          'Start Game',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ],
-                  ],
+            Image.asset(
+              _imageAsset,
+              width: 150,
+              height: 150,
+            ),
+            const SizedBox(height: 20),
+            if (!_isFlipping)
+              Text(
+                "Result: ${_finalResult == "head" ? "Heads" : "Tails"}",
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
+              ),
+            const SizedBox(height: 30), // Add some spacing below the result
+            if (!_isFlipping) // Show the button only after the flip is complete
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GamePage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white, // Button background color
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  'Let\'s Go',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFD13737), // Text color to match background
+                  ),
+                ),
+              ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class StartGamePage extends StatelessWidget {
-  const StartGamePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Start Game')),
-      body: Center(
-        child: Text(
-          'Game Started!',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );

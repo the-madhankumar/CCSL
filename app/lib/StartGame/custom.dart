@@ -1,8 +1,9 @@
+import 'package:app/StartGame/Toss.dart';
 import 'package:app/StartGame/addplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/firebase_database.dart'; // Make sure this import points to the correct file where FlipTossPage is defined
 
 
 class Custom extends StatefulWidget {
@@ -164,17 +165,26 @@ class _CustomState extends State<Custom> {
                 ),
                 SizedBox(height: screenHeight * 0.15),
                 Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.001),
-                  child: _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: 'START GAME',
-                    color: const Color(0xFFD13737),
-                    height_: 0.10,
-                    width_: 0.85,
-                    font_size: 0.12,
-                  ),
-                ),
+  padding: EdgeInsets.only(left: screenWidth * 0.001),
+  child: GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FlipTossPage()), // Replace `NextPage` with your target page widget
+      );
+    },
+    child: _bigContainer(
+      screenWidth,
+      screenHeight,
+      text: 'START GAME',
+      color: const Color(0xFFD13737),
+      height_: 0.10,
+      width_: 0.85,
+      font_size: 0.12,
+    ),
+  ),
+),
+
               ],
             ),
           ),

@@ -140,7 +140,7 @@ class StartGame extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => CoinToss()),
+                          MaterialPageRoute(builder: (context) => FlipTossPage()),
                         );
                       },
                       child: _bigContainer(
