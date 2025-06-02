@@ -82,6 +82,12 @@ flutter:
     - assets/about.pdf
     - assets/IMAGES/head.png
     - assets/IMAGES/tailsmini.png
+    - assets/IMAGES/1.png
+    - assets/IMAGES/2.png
+    - assets/IMAGES/3.png
+    - assets/IMAGES/4.png
+    - assets/IMAGES/5.png
+    - assets/IMAGES/6.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

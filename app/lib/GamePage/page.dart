@@ -10,6 +10,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   String card = '';
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -42,15 +43,33 @@ class _GamePageState extends State<GamePage> {
                         border: Border.all(color: Color(0xFF715018), width: 7),
                       ),
                       SizedBox(width: screenWidth * 0.05),
-                      _bigContainer(
-                        screenWidth,
-                        screenHeight,
-                        text: card,
-                        color: const Color(0xFFD13737),
-                        height_: 0.20,
-                        width_: 0.35,
-                        font_size: 0.3,
-                        border: Border.all(color: Color(0xFF715018), width: 7),
+
+                      /// ✅ SHOW IMAGE INSTEAD OF TEXT
+                      Container(
+                        height: screenHeight * 0.20,
+                        width: screenWidth * 0.35,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD13737),
+                          border: Border.all(color: const Color(0xFF715018), width: 7),
+                          borderRadius: const BorderRadius.all(Radius.circular(25)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: card.isNotEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Image.asset(
+                                  'assets/IMAGES/$card',
+                                  fit: BoxFit.contain,
+                                ),
+                              )
+                            : const SizedBox.shrink(),
                       ),
                     ],
                   ),
@@ -72,11 +91,10 @@ class _GamePageState extends State<GamePage> {
                             font_size: 0.10,
                             onTap: () {
                               setState(() {
-                                card = '1';
+                                card = '1.png';
                               });
                             },
                           ),
-
                           SizedBox(width: screenWidth * 0.05),
                           _bigContainer(
                             screenWidth,
@@ -88,7 +106,7 @@ class _GamePageState extends State<GamePage> {
                             font_size: 0.10,
                             onTap: () {
                               setState(() {
-                                card = '2';
+                                card = '2.png';
                               });
                             },
                           ),
@@ -103,7 +121,7 @@ class _GamePageState extends State<GamePage> {
                             font_size: 0.10,
                             onTap: () {
                               setState(() {
-                                card = '3';
+                                card = '3.png';
                               });
                             },
                           ),
@@ -122,7 +140,7 @@ class _GamePageState extends State<GamePage> {
                             font_size: 0.10,
                             onTap: () {
                               setState(() {
-                                card = '4';
+                                card = '4.png';
                               });
                             },
                           ),
@@ -137,7 +155,7 @@ class _GamePageState extends State<GamePage> {
                             font_size: 0.10,
                             onTap: () {
                               setState(() {
-                                card = '5';
+                                card = '5.png';
                               });
                             },
                           ),
@@ -152,7 +170,7 @@ class _GamePageState extends State<GamePage> {
                             font_size: 0.10,
                             onTap: () {
                               setState(() {
-                                card = '6';
+                                card = '6.png';
                               });
                             },
                           ),
@@ -172,13 +190,12 @@ class _GamePageState extends State<GamePage> {
                       ),
                       SizedBox(width: screenWidth * 0.3),
                       GestureDetector(
-                        onTap:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ResultPage(),
-                              ),
-                            ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ResultPage(),
+                          ),
+                        ),
                         child: _CircleContainer(
                           screenWidth,
                           screenHeight,
@@ -205,7 +222,7 @@ Widget _bigContainer(
   double height_ = 0,
   double width_ = 0,
   double font_size = 0,
-  Border? border = null,
+  Border? border,
   VoidCallback? onTap,
 }) {
   return GestureDetector(
@@ -219,7 +236,6 @@ Widget _bigContainer(
         borderRadius: const BorderRadius.all(Radius.circular(25)),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.3),
             spreadRadius: 2,
             blurRadius: 5,
@@ -311,9 +327,8 @@ Widget _CircleContainer(
       shape: BoxShape.circle,
     ),
     padding: const EdgeInsets.all(6),
-    child:
-        imagePath != null && imagePath.isNotEmpty
-            ? ClipOval(child: Image.asset(imagePath, fit: BoxFit.contain))
-            : const SizedBox.shrink(),
+    child: imagePath != null && imagePath.isNotEmpty
+        ? ClipOval(child: Image.asset(imagePath, fit: BoxFit.contain))
+        : const SizedBox.shrink(),
   );
 }
