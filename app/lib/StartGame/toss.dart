@@ -38,17 +38,19 @@ class _FlipTossPageState extends State<FlipTossPage> {
 
     _flipTimer = Timer.periodic(oneSec, (timer) {
       setState(() {
-        _imageAsset = _imageAsset.contains("head")
-            ? "assets/IMAGES/tailsmini.png"
-            : "assets/IMAGES/head.png";
+        _imageAsset =
+            _imageAsset.contains("head")
+                ? "assets/IMAGES/tailsmini.png"
+                : "assets/IMAGES/head.png";
 
         _flipCount++;
         if (_flipCount >= numberOfFlips * 2) {
           _flipTimer.cancel();
           _isFlipping = false;
-          _imageAsset = _finalResult == "head"
-              ? "assets/IMAGES/head.png"
-              : "assets/IMAGES/tailsmini.png";
+          _imageAsset =
+              _finalResult == "head"
+                  ? "assets/IMAGES/head.png"
+                  : "assets/IMAGES/tailsmini.png";
         }
       });
     });
@@ -64,16 +66,12 @@ class _FlipTossPageState extends State<FlipTossPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFD13737), // Set background color here
+      backgroundColor: const Color(0xFFD13737),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              _imageAsset,
-              width: 150,
-              height: 150,
-            ),
+            Image.asset(_imageAsset, width: 150, height: 150),
             const SizedBox(height: 20),
             if (!_isFlipping)
               Text(
@@ -84,8 +82,8 @@ class _FlipTossPageState extends State<FlipTossPage> {
                   color: Colors.white,
                 ),
               ),
-            const SizedBox(height: 30), // Add some spacing below the result
-            if (!_isFlipping) // Show the button only after the flip is complete
+            const SizedBox(height: 30),
+            if (!_isFlipping)
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -94,9 +92,11 @@ class _FlipTossPageState extends State<FlipTossPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white, // Button background color
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -106,7 +106,7 @@ class _FlipTossPageState extends State<FlipTossPage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFD13737), // Text color to match background
+                    color: Color(0xFFD13737),
                   ),
                 ),
               ),
