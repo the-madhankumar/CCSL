@@ -46,6 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '325711534533',
     projectId: 'ccsl-909d7',
     authDomain: 'ccsl-909d7.firebaseapp.com',
+    databaseURL: 'https://ccsl-909d7-default-rtdb.firebaseio.com',
     storageBucket: 'ccsl-909d7.firebasestorage.app',
     measurementId: 'G-D5BN2Q5MBL',
   );
@@ -55,6 +56,7 @@ class DefaultFirebaseOptions {
     appId: '1:325711534533:android:186595b64d30206e1813ac',
     messagingSenderId: '325711534533',
     projectId: 'ccsl-909d7',
+    databaseURL: 'https://ccsl-909d7-default-rtdb.firebaseio.com',
     storageBucket: 'ccsl-909d7.firebasestorage.app',
   );
 
@@ -63,6 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:325711534533:ios:c6839f89571a5cb11813ac',
     messagingSenderId: '325711534533',
     projectId: 'ccsl-909d7',
+    databaseURL: 'https://ccsl-909d7-default-rtdb.firebaseio.com',
     storageBucket: 'ccsl-909d7.firebasestorage.app',
     iosBundleId: 'com.example.app',
   );
@@ -72,6 +75,7 @@ class DefaultFirebaseOptions {
     appId: '1:325711534533:ios:c6839f89571a5cb11813ac',
     messagingSenderId: '325711534533',
     projectId: 'ccsl-909d7',
+    databaseURL: 'https://ccsl-909d7-default-rtdb.firebaseio.com',
     storageBucket: 'ccsl-909d7.firebasestorage.app',
     iosBundleId: 'com.example.app',
   );
@@ -82,7 +86,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '325711534533',
     projectId: 'ccsl-909d7',
     authDomain: 'ccsl-909d7.firebaseapp.com',
+    databaseURL: 'https://ccsl-909d7-default-rtdb.firebaseio.com',
     storageBucket: 'ccsl-909d7.firebasestorage.app',
     measurementId: 'G-96W2L7VFS6',
   );
+
 }
