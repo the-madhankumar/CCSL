@@ -166,7 +166,7 @@ Q-Learning updates a Q-table of expected rewards based on:
 
 ```
 
-Q(s, a) ← Q(s, a) + α \* (reward + γ \* max(Q(s’, a’)) - Q(s, a))
+Q(s, a) ← Q(s, a) + α * (reward + γ * max(Q(s’, a’)) - Q(s, a))
 
 ````
 
