@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:app/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,41 +6,55 @@ import 'package:firebase_database/firebase_database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   print('✅ Firebase Initialized');
 
-  final ref1 = FirebaseDatabase.instance.ref('RLAgentDataBowling');
-  final ref2 = FirebaseDatabase.instance.ref('RLAgentDataBatting');
+  final DatabaseReference bowlingRef = FirebaseDatabase.instance.ref('RLAgentDataBowling');
+  final DatabaseReference battingRef = FirebaseDatabase.instance.ref('RLAgentDataBatting');
 
-  final turns = [1, 2, 3, 4, 5, 6];
-  final powerCards = [0, 1, 2];
-  final cooldowns = [0, 1];
-  final freeHits = [0, 1];
+  const List<int> cooldowns = [0, 1];
+  const List<int> freeHits = [0, 1];
+  const int maxT = 30;
+  const int maxP = 10;
+  const int totalActions = 7;
 
-  final Map<String, Map<String, double>> rlAgentData = {};
+  final Random random = Random(); // Random generator
+  final Map<String, Map<String, double>> qTable = {};
 
-  for (var t in turns) {
-    for (var p in powerCards) {
-      for (var c in cooldowns) {
-        for (var f in freeHits) {
-          final key = 'T${t}_P${p}_C${c}_F${f}';
-          rlAgentData[key] = {
-            "0": 0.0,
-            "1": 0.0,
-            "2": 0.0,
-            "3": 0.0,
-            "4": 0.0,
-            "6": 0.0,
+  for (int t = 0; t <= maxT; t++) {
+    for (int p = 0; p <= maxP; p++) {
+      for (int c in cooldowns) {
+        for (int f in freeHits) {
+          final String stateKey = 'T${t}_P${p}_C${c}_F${f}';
+
+          final Map<String, double> actionValues = {
+            for (int a = 0; a < totalActions; a++) 'A$a': random.nextDouble(),
           };
+
+          qTable[stateKey] = actionValues;
         }
       }
     }
   }
 
-  await ref1.set(rlAgentData);
-  await ref2.set(rlAgentData);
-  print("✅ Q-table uploaded with ${rlAgentData.length} states and string keys.");
-  
+  // Confirm total expected states
+  final int expectedStates = (maxT + 1) * (maxP + 1) * cooldowns.length * freeHits.length;
+  assert(qTable.length == expectedStates, '❌ State count mismatch');
+
+  print("🔍 Total States: ${qTable.length} (Expected: $expectedStates)");
+
+  // Clean old data
+  await bowlingRef.remove();
+  await battingRef.remove();
+  print("🗑️ Old Q-tables deleted");
+
+  // Upload new Q-tables
+  await bowlingRef.set(qTable);
+  await battingRef.set(qTable);
+  print("✅ Q-table uploaded successfully with random Q-values");
+
   runApp(const PlaceholderApp());
 }
 
