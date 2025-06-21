@@ -1,10 +1,10 @@
+import 'package:app/Bot/RLAgentPage.dart';
 import 'package:app/StartGame/Toss.dart';
 import 'package:app/StartGame/addplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart'; // Make sure this import points to the correct file where FlipTossPage is defined
-
 
 class Custom extends StatefulWidget {
   const Custom({Key? key}) : super(key: key);
@@ -14,13 +14,16 @@ class Custom extends StatefulWidget {
 }
 
 class _CustomState extends State<Custom> {
+  final TextEditingController _Overscontroller = TextEditingController();
+  final TextEditingController _WicketsController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     double fontSize = screenWidth * 0.07;
-    final TextEditingController _Overscontroller = TextEditingController();
-    final TextEditingController _WicketsController = TextEditingController();
+
+    late final overs = int.parse(_Overscontroller.text);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -150,41 +153,54 @@ class _CustomState extends State<Custom> {
                         ),
                       ),
                       SizedBox(width: screenWidth * 0.07),
-                      _bigContainer(
-                        screenWidth,
-                        screenHeight,
-                        text: 'Bot',
-                        color: const Color(0xFFD13737),
-                        height_: 0.10,
-                        width_: 0.35,
-                        font_size: 0.10,
-                        imagePath: 'assets/IMAGES/bot.png',
+                      GestureDetector(
+                        child: _bigContainer(
+                          screenWidth,
+                          screenHeight,
+                          text: 'Bot',
+                          color: const Color(0xFFD13737),
+                          height_: 0.10,
+                          width_: 0.35,
+                          font_size: 0.10,
+                          imagePath: 'assets/IMAGES/bot.png',
+                        ),
+                        onTap:
+                            () => {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => RLAgentPage(overs: overs),
+                                ),
+                              ),
+                            },
                       ),
                     ],
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.15),
                 Padding(
-  padding: EdgeInsets.only(left: screenWidth * 0.001),
-  child: GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => FlipTossPage()), // Replace `NextPage` with your target page widget
-      );
-    },
-    child: _bigContainer(
-      screenWidth,
-      screenHeight,
-      text: 'START GAME',
-      color: const Color(0xFFD13737),
-      height_: 0.10,
-      width_: 0.85,
-      font_size: 0.12,
-    ),
-  ),
-),
-
+                  padding: EdgeInsets.only(left: screenWidth * 0.001),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FlipTossPage(),
+                        ), // Replace `NextPage` with your target page widget
+                      );
+                    },
+                    child: _bigContainer(
+                      screenWidth,
+                      screenHeight,
+                      text: 'START GAME',
+                      color: const Color(0xFFD13737),
+                      height_: 0.10,
+                      width_: 0.85,
+                      font_size: 0.12,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -284,7 +300,7 @@ Widget TextContainer(
           ),
           decoration: InputDecoration(
             border: InputBorder.none,
-            
+
             contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
           ),
         ),

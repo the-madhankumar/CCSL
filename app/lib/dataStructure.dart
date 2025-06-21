@@ -1,107 +1,67 @@
-class GamePlayer {
-  final String username;
-  final String team;
-  final int wickets;
-  final int overs;
-  final int score;
-  final List<String> deck;
-  final List<String> usedCards;
-  final bool isBatting;
-  final String status;
+class Player {
+  final String name;
+  final String? currentCard;
+  final int? score;
+  final bool? isDone;
 
-  GamePlayer({
-    required this.username,
-    required this.team,
-    required this.wickets,
-    required this.overs,
-    required this.score,
-    required this.deck,
-    required this.usedCards,
-    required this.isBatting,
-    required this.status,
+  Player({
+    required this.name,
+    this.currentCard,
+    this.score,
+    this.isDone,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'username': username,
-      'team': team,
-      'wickets': wickets,
-      'overs': overs,
+      'name': name,
+      'currentCard': currentCard,
       'score': score,
-      'deck': deck,
-      'usedCards': usedCards,
-      'isBatting': isBatting,
-      'status': status,
+      'isDone': isDone,
     };
   }
 
-  factory GamePlayer.fromJson(Map<String, dynamic> json) {
-    return GamePlayer(
-      username: json['username'],
-      team: json['team'],
-      wickets: json['wickets'],
-      overs: json['overs'],
+  factory Player.fromJson(Map<String, dynamic> json) {
+    return Player(
+      name: json['name'] ?? '',
+      currentCard: json['currentCard'],
       score: json['score'],
-      deck: List<String>.from(json['deck']),
-      usedCards: List<String>.from(json['usedCards']),
-      isBatting: json['isBatting'],
-      status: json['status'],
+      isDone: json['isDone'],
     );
   }
 }
 
 class Game {
-  final String status;
-  final int createdAt;
-  final int lastActivity;
-  final int currentOver;
-  final int currentBall;
-  final String? currentBatsman;
-  final Map<String, GamePlayer> players; // key is uid
+  final String gameId;
+  final String status; // waiting / started / finished
+  final Map<String, Player> players; // uid1, uid2 → Player
   final String? winner;
 
   Game({
+    required this.gameId,
     required this.status,
-    required this.createdAt,
-    required this.lastActivity,
-    required this.currentOver,
-    required this.currentBall,
-    this.currentBatsman,
     required this.players,
     this.winner,
   });
 
   Map<String, dynamic> toJson() {
     return {
+      'gameId': gameId,
       'status': status,
-      'createdAt': createdAt,
-      'lastActivity': lastActivity,
-      'currentOver': currentOver,
-      'currentBall': currentBall,
-      'currentBatsman': currentBatsman,
-      'players': players.map((key, value) => MapEntry(key, value.toJson())),
+      'players': players.map((key, player) => MapEntry(key, player.toJson())),
       'winner': winner,
     };
   }
 
   factory Game.fromJson(Map<String, dynamic> json) {
-    final playersMap = Map<String, GamePlayer>.from(
-      json['players'].map(
-        (key, value) => MapEntry(
-          key,
-          GamePlayer.fromJson(Map<String, dynamic>.from(value)),
-        ),
-      ),
+    final playerMap = Map<String, dynamic>.from(json['players'] ?? {});
+    final parsedPlayers = playerMap.map<String, Player>(
+      (key, value) => MapEntry(key, Player.fromJson(Map<String, dynamic>.from(value))),
     );
 
     return Game(
-      status: json['status'],
-      createdAt: json['createdAt'],
-      lastActivity: json['lastActivity'],
-      currentOver: json['currentOver'],
-      currentBall: json['currentBall'],
-      currentBatsman: json['currentBatsman'],
-      players: playersMap,
+      gameId: json['gameId'] ?? '',
+      status: json['status'] ?? 'waiting',
+      players: parsedPlayers,
       winner: json['winner'],
     );
   }

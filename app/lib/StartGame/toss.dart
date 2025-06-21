@@ -164,7 +164,7 @@ class _FlipTossPageState extends State<FlipTossPage> {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => GamePage()),
+          MaterialPageRoute(builder: (context) => GamePage(GameId: '123456', CurrentPlayer: 1, over: 2, currentInnings: 1,)),
         );
       },
       style: ElevatedButton.styleFrom(

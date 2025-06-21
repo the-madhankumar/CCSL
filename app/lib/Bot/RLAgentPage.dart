@@ -10,14 +10,11 @@ import 'dart:math';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  runApp(
-    const MaterialApp(home: RLAgentPage(), debugShowCheckedModeBanner: false),
-  );
 }
 
 class RLAgentPage extends StatefulWidget {
-  const RLAgentPage({super.key});
+  final int overs;
+  const RLAgentPage({super.key, required this.overs});
 
   @override
   State<RLAgentPage> createState() => _RLAgentPageState();
@@ -452,13 +449,7 @@ class _RLAgentPageState extends State<RLAgentPage> {
                       ),
                       SizedBox(width: screenWidth * 0.3),
                       GestureDetector(
-                        onTap:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ResultPage(),
-                              ),
-                            ),
+                        onTap: () => onCardTap(6),
                         child: _CircleContainer(
                           screenWidth,
                           screenHeight,

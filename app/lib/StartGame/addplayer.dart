@@ -1,4 +1,5 @@
 import 'package:app/GamePage/page.dart';
+import 'package:app/StartGame/toss.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
@@ -137,7 +138,7 @@ class _AddplayerState extends State<Addplayer> {
                   onTap:
                       () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => GamePage()),
+                        MaterialPageRoute(builder: (context) => FlipTossPage()),
                       ),
                   child: Padding(
                     padding: EdgeInsets.only(left: screenWidth * 0.001),

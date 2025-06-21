@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ResultPage extends StatelessWidget {
-  const ResultPage({Key? key}) : super(key: key);
+  final int score1;
+  final int score2;
+  final String winner;
+  const ResultPage({
+    Key? key,
+    required this.score1,
+    required this.score2,
+    required this.winner,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +64,9 @@ class ResultPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
-            _ContainerSet(screenWidth, screenHeight),
+            _ContainerSet(screenWidth, screenHeight, score1),
             SizedBox(height: screenHeight * 0.05),
-            _ContainerSet(screenWidth, screenHeight),
+            _ContainerSet(screenWidth, screenHeight, score2),
             SizedBox(height: screenHeight * 0.05),
             Container(
               height: screenHeight * 0.10,
@@ -69,14 +77,25 @@ class ResultPage extends StatelessWidget {
               ),
               alignment: Alignment.centerLeft,
 
-              child: Padding(
-                padding: EdgeInsets.only(left: screenWidth * 0.05),
-                child: Image.asset(
-                  'assets/IMAGES/MOMpng.png',
-                  height: screenHeight * 0.08,
-                  width: screenHeight * 0.08,
-                  fit: BoxFit.contain,
-                ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(left: screenWidth * 0.05),
+                    child: Image.asset(
+                      'assets/IMAGES/MOMpng.png',
+                      height: screenHeight * 0.08,
+                      width: screenHeight * 0.08,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  Text(
+                    winner,
+                    style: GoogleFonts.judson(
+                      fontSize: screenWidth * 0.12,
+                      color: const Color(0xFFD9D9D9),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -123,7 +142,7 @@ Widget _bigContainer(
   );
 }
 
-Widget _ContainerSet(double screenWidth, double screenHeight) {
+Widget _ContainerSet(double screenWidth, double screenHeight, int score) {
   return Container(
     height: screenHeight * 0.25,
     width: screenWidth * 0.9,
@@ -174,7 +193,7 @@ Widget _ContainerSet(double screenWidth, double screenHeight) {
         _bigContainer(
           screenWidth,
           screenHeight,
-          text: '',
+          text: score.toString(),
           color: const Color(0xFFD19837),
           height_: 0.10,
           width_: 0.85,
