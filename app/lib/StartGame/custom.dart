@@ -2,9 +2,37 @@ import 'package:app/Bot/RLAgentPage.dart';
 import 'package:app/StartGame/Toss.dart';
 import 'package:app/StartGame/addplayer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart'; // Make sure this import points to the correct file where FlipTossPage is defined
+import 'package:firebase_database/firebase_database.dart';
+
+Future<int?> getOvers(
+  BuildContext context,
+  TextEditingController controller,
+) async {
+  String text = controller.text.trim();
+
+  if (text.isEmpty) {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Missing Input"),
+        content: const Text("Please enter the number of overs."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+    return null;
+  }
+
+  return int.parse(text);
+}
+
 
 class Custom extends StatefulWidget {
   const Custom({Key? key}) : super(key: key);
@@ -22,8 +50,6 @@ class _CustomState extends State<Custom> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     double fontSize = screenWidth * 0.07;
-
-    late final overs = int.parse(_Overscontroller.text);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -98,6 +124,7 @@ class _CustomState extends State<Custom> {
                         height_: 0.10,
                         width_: 0.25,
                         font_size: 0.10,
+                        Controll: _Overscontroller,
                       ),
                     ],
                   ),
@@ -124,6 +151,7 @@ class _CustomState extends State<Custom> {
                         height_: 0.10,
                         width_: 0.25,
                         font_size: 0.10,
+                        Controll: _WicketsController,
                       ),
                     ],
                   ),
@@ -134,13 +162,21 @@ class _CustomState extends State<Custom> {
                   child: Row(
                     children: [
                       GestureDetector(
-                        onTap:
-                            () => Navigator.push(
+                        onTap: () async {
+                          int? overs = await getOvers(
+                            context,
+                            _Overscontroller,
+                          );
+                          if (overs != null) {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Addplayer(),
+                                builder: (context) => Addplayer(overs: overs),
                               ),
-                            ),
+                            );
+                          }
+                        },
+
                         child: _bigContainer(
                           screenWidth,
                           screenHeight,
@@ -164,16 +200,20 @@ class _CustomState extends State<Custom> {
                           font_size: 0.10,
                           imagePath: 'assets/IMAGES/bot.png',
                         ),
-                        onTap:
-                            () => {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => RLAgentPage(overs: overs),
-                                ),
+                        onTap: () async {
+                          int? overs = await getOvers(
+                            context,
+                            _Overscontroller,
+                          );
+                          if (overs != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RLAgentPage(overs: overs),
                               ),
-                            },
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -186,8 +226,8 @@ class _CustomState extends State<Custom> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FlipTossPage(),
-                        ), // Replace `NextPage` with your target page widget
+                          builder: (context) => RLAgentPage(overs: 2),
+                        ),
                       );
                     },
                     child: _bigContainer(
@@ -291,9 +331,10 @@ Widget TextContainer(
       ],
     ),
     child: Center(
-      child: Expanded(
+      child: SizedBox(
         child: TextField(
           controller: Controll,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           style: GoogleFonts.judson(
             fontSize: screenWidth * font_size,
             color: const Color(0xFFD9D9D9),

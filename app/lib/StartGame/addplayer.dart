@@ -1,33 +1,124 @@
-import 'package:app/GamePage/page.dart';
 import 'package:app/StartGame/toss.dart';
+import 'package:app/dataStructure.dart';
+import 'package:app/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 class Addplayer extends StatefulWidget {
-  const Addplayer({Key? key}) : super(key: key);
+  final int overs;
+  const Addplayer({Key? key, required this.overs}) : super(key: key);
 
   @override
   State<Addplayer> createState() => _AddplayerState();
 }
 
 class _AddplayerState extends State<Addplayer> {
-  final TextEditingController _playercontroller = TextEditingController();
-  late final int randomNumber;
+  final TextEditingController _playerController = TextEditingController();
+  final TextEditingController _gameIdController = TextEditingController();
+
+  bool isCreating = true;
+  int? generatedGameId;
+  late int overs;
 
   @override
   void initState() {
     super.initState();
-    // Generate the random number once
-    var random = math.Random();
-    randomNumber = 100000 + random.nextInt(900000);
+    overs = widget.overs;
+  }
+
+  Future<void> handleStartGame() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    final db = FirebaseDatabase.instance;
+    String playerName = _playerController.text.trim();
+
+    print("Overs: $overs");
+
+    if (playerName.isEmpty) {
+      showSnack("Please enter your name");
+      return;
+    }
+
+    if (isCreating) {
+      int gameId = 100000 + math.Random().nextInt(900000);
+      setState(() => generatedGameId = gameId);
+
+      final game = Game(
+        gameId: '$gameId',
+        status: 'started',
+        winner: null,
+        players: {
+          'uid1': Player(
+            name: playerName,
+            currentCard: '',
+            score: 0,
+            isDone: false,
+          ),
+          'uid2': Player(name: '', currentCard: '', score: 0, isDone: false),
+        },
+      );
+
+      await db.ref('games/$gameId').set(game.toJson());
+
+      await Clipboard.setData(ClipboardData(text: '$gameId'));
+      showSnack("Game ID copied to clipboard!");
+
+      await Future.delayed(Duration(seconds: 1));
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => FlipTossPage(
+                gameId: '$gameId',
+                playerName: playerName,
+                overs: overs,
+              ),
+        ),
+      );
+    } else {
+      String gameId = _gameIdController.text.trim();
+      if (gameId.isEmpty) {
+        showSnack("Please enter Game ID");
+        return;
+      }
+
+      final ref = db.ref('games/$gameId');
+      final snapshot = await ref.get();
+
+      if (!snapshot.exists) {
+        showSnack("Game ID not found!");
+        return;
+      }
+
+      await ref.child('players/uid2').update({'name': playerName});
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => FlipTossPage(
+                gameId: '$gameId',
+                playerName: playerName,
+                overs: overs,
+              ),
+        ),
+      );
+    }
+  }
+
+  void showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double fontSize = screenWidth * 0.07;
 
     return Scaffold(
       body: Container(
@@ -36,121 +127,72 @@ class _AddplayerState extends State<Addplayer> {
           child: SizedBox(
             height: screenHeight,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: screenHeight * 0.1),
-                Align(
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      height: screenHeight * 0.08,
-                      width: screenWidth * 0.9,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 2.0,
-                            ),
-                            child: Image.asset(
-                              'assets/IMAGES/settingsicon.png',
-                              height: screenHeight * 0.5,
-                              width: screenHeight * 0.1,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Add Player',
-                                style: GoogleFonts.judson(
-                                  fontSize: screenHeight * 0.06,
-                                  color: const Color(0xFFF9DDDD),
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                Text(
+                  isCreating ? 'Create Room' : 'Join Room',
+                  style: GoogleFonts.judson(
+                    fontSize: screenHeight * 0.06,
+                    color: Colors.white,
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.05),
-                Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.001),
-                  child: _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: 'Create Room',
-                    color: const Color(0xFFD13737),
-                    height_: 0.10,
-                    width_: 0.85,
-                    font_size: 0.12,
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.05),
-                Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.001),
-                  child: TextContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: 'Enter your username',
-                    color: const Color(0xFFD13737),
-                    height_: 0.10,
-                    width_: 0.85,
-                    font_size: 0.12,
-                    Controll: _playercontroller,
-                  ),
-                ),
 
-                SizedBox(height: screenHeight * 0.05),
-                Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.001),
-                  child: _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: randomNumber.toString(),
-                    color: const Color(0xFFD19837),
-                    height_: 0.10,
-                    width_: 0.85,
-                    font_size: 0.12,
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.05),
-                Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.01),
-                  child: _bigContainer(
-                    screenWidth,
-                    screenHeight,
-                    text: 'Accept',
-                    color: const Color(0xFFD13737),
-                    height_: 0.10,
-                    width_: 0.30,
-                    font_size: 0.09,
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.05),
-                GestureDetector(
-                  onTap:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => FlipTossPage()),
-                      ),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: screenWidth * 0.001),
-                    child: _bigContainer(
+                // Toggle Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    toggleButton(
+                      'Create Room',
+                      true,
                       screenWidth,
                       screenHeight,
-                      text: 'Start Game',
-                      color: const Color(0xFFD13737),
-                      height_: 0.10,
-                      width_: 0.85,
-                      font_size: 0.12,
                     ),
+                    SizedBox(width: 16),
+                    toggleButton('Join Room', false, screenWidth, screenHeight),
+                  ],
+                ),
+                SizedBox(height: 30),
+
+                TextContainer(
+                  screenWidth,
+                  screenHeight,
+                  text: 'Enter your name',
+                  Controll: _playerController,
+                ),
+
+                if (!isCreating)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: TextContainer(
+                      screenWidth,
+                      screenHeight,
+                      text: 'Enter Game ID',
+                      Controll: _gameIdController,
+                    ),
+                  ),
+
+                if (generatedGameId != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Text(
+                      'Your Game ID: $generatedGameId',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+
+                SizedBox(height: 40),
+
+                GestureDetector(
+                  onTap: handleStartGame,
+                  child: _bigContainer(
+                    screenWidth,
+                    screenHeight,
+                    text: isCreating ? 'Create & Start Game' : 'Join Game',
+                    color: const Color(0xFFD19837),
+                    height_: 0.08,
+                    width_: 0.7,
+                    font_size: 0.06,
                   ),
                 ),
               ],
@@ -160,6 +202,55 @@ class _AddplayerState extends State<Addplayer> {
       ),
     );
   }
+
+  Widget toggleButton(
+    String text,
+    bool creationValue,
+    double screenWidth,
+    double screenHeight,
+  ) {
+    return GestureDetector(
+      onTap: () => setState(() => isCreating = creationValue),
+      child: _bigContainer(
+        screenWidth,
+        screenHeight,
+        text: text,
+        color:
+            isCreating == creationValue
+                ? const Color(0xFFAA8020)
+                : const Color(0xFFD19837),
+        height_: 0.07,
+        width_: 0.35,
+        font_size: 0.05,
+      ),
+    );
+  }
+}
+
+Widget TextContainer(
+  double screenWidth,
+  double screenHeight, {
+  required String text,
+  required TextEditingController Controll,
+}) {
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    decoration: BoxDecoration(
+      color: const Color(0xFFD19837),
+      borderRadius: BorderRadius.circular(25),
+    ),
+    child: TextField(
+      controller: Controll,
+      style: GoogleFonts.judson(fontSize: 20, color: Colors.white),
+      decoration: InputDecoration(
+        labelText: text,
+        labelStyle: TextStyle(color: Colors.white70),
+        border: InputBorder.none,
+      ),
+      cursorColor: Colors.white,
+    ),
+  );
 }
 
 Widget _bigContainer(
@@ -170,17 +261,18 @@ Widget _bigContainer(
   double height_ = 0,
   double width_ = 0,
   double font_size = 0,
-  String? imagePath,
+  Border? border,
+  VoidCallback? onTap,
 }) {
   return Container(
     height: screenHeight * height_,
     width: screenWidth * width_,
     decoration: BoxDecoration(
       color: color,
+      border: border,
       borderRadius: const BorderRadius.all(Radius.circular(25)),
       boxShadow: [
         BoxShadow(
-          // ignore: deprecated_member_use
           color: Colors.black.withOpacity(0.3),
           spreadRadius: 2,
           blurRadius: 5,
@@ -189,87 +281,11 @@ Widget _bigContainer(
       ],
     ),
     child: Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (imagePath != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 1.0),
-              child: Image.asset(
-                imagePath,
-                height: screenHeight * 0.1,
-                width: screenWidth * 0.1,
-                fit: BoxFit.contain,
-              ),
-            ),
-          Text(
-            text,
-            style: GoogleFonts.judson(
-              fontSize: screenWidth * font_size,
-              color: const Color(0xFFD9D9D9),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget TextContainer(
-  double screenWidth,
-  double screenHeight, {
-  String text = '',
-  Color color = const Color(0xFFD19837),
-  double height_ = 0,
-  double width_ = 0,
-  double font_size = 0,
-  TextEditingController? Controll,
-}) {
-  return Container(
-    height: screenHeight * height_,
-    width: screenWidth * width_,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(25),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.25),
-          spreadRadius: 2,
-          blurRadius: 6,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Center(
-        child: TextField(
-          controller: Controll,
-          style: GoogleFonts.judson(
-            fontSize: screenWidth * 0.1,
-            color: Colors.white,
-          ),
-          decoration: InputDecoration(
-            labelText: text,
-            floatingLabelBehavior:
-                (Controll?.text.isNotEmpty ?? false)
-                    ? FloatingLabelBehavior.always
-                    : FloatingLabelBehavior.auto,
-            labelStyle: GoogleFonts.judson(
-              fontSize: screenWidth * font_size * 0.9,
-              color: Colors.white70,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: const Color.fromARGB(0, 255, 255, 255),
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-          ),
-          cursorColor: Colors.white,
+      child: Text(
+        text,
+        style: GoogleFonts.judson(
+          fontSize: screenWidth * font_size,
+          color: const Color(0xFFD9D9D9),
         ),
       ),
     ),

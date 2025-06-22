@@ -1,3 +1,4 @@
+import 'package:app/Bot/RLAgentPage.dart';
 import 'package:app/StartGame/About.dart';
 import 'package:app/StartGame/custom.dart';
 import 'package:app/StartGame/rule.dart';
@@ -140,7 +141,7 @@ class StartGame extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => FlipTossPage()),
+                          MaterialPageRoute(builder: (context) => RLAgentPage(overs: 2,)),
                         );
                       },
                       child: _bigContainer(

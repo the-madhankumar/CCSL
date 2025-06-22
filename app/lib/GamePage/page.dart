@@ -8,12 +8,16 @@ class GamePage extends StatefulWidget {
   final int CurrentPlayer;
   final String GameId;
   final int currentInnings;
+  final bool role;
+  final String playerId;
   const GamePage({
     Key? key,
     required this.over,
     required this.CurrentPlayer,
     required this.GameId,
     required this.currentInnings,
+    required this.role,
+    required this.playerId,
   }) : super(key: key);
   @override
   State<GamePage> createState() => _GamePageState();
@@ -21,7 +25,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   String card = '';
-  int over = 0;
+  String opponentCard = '';
   bool Batting = false;
   bool Bowling = false;
   int CurrentPlayer = 1;
@@ -32,12 +36,14 @@ class _GamePageState extends State<GamePage> {
   late DatabaseReference ref;
   late String currentGameId;
   late int currentInnings;
+  late bool role;
+  late int over;
 
   @override
   void initState() {
     super.initState();
 
-    currentId = widget.CurrentPlayer == 1 ? 'uid1' : 'uid2';
+    currentId = widget.playerId;
     currentGameId = widget.GameId;
     ref = FirebaseDatabase.instance.ref(
       'games/$currentGameId/players/$currentId',
@@ -45,10 +51,14 @@ class _GamePageState extends State<GamePage> {
     over = widget.over;
     CurrentPlayer = widget.CurrentPlayer;
     currentInnings = widget.currentInnings;
+    role = widget.CurrentPlayer == 1;
+
+    listenToOpponentChanges();
   }
 
   bool hasPlayed = false;
   Future<void> addCurrentCard(int currentBall) async {
+    print("Current Batting Card $currentBall");
     if (hasPlayed) return;
     hasPlayed = true;
 
@@ -62,18 +72,27 @@ class _GamePageState extends State<GamePage> {
 
     final result = await checkCardsAndStatus();
     if (!result['bothDone']) {
+      hasPlayed = false;
       return;
     }
 
+    final db = FirebaseDatabase.instance;
+
     if (result['sameCard']) {
+      print("\n");
+      print("\n");
+      print(
+        "[MORE THAN LEO UPDATE] sameCard Appears when vicky senior on fire",
+      );
       setState(() {
         score -= currentBall;
         trackOver.removeLast();
       });
 
-      await ref.update({'isDone': false});
+      score -= currentBall;
+      await ref.update({'score': score});
 
-      showDialog(
+      await showDialog(
         context: context,
         builder:
             (_) => AlertDialog(
@@ -85,7 +104,6 @@ class _GamePageState extends State<GamePage> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    hasPlayed = false;
                   },
                   child: const Text('OK'),
                 ),
@@ -93,18 +111,10 @@ class _GamePageState extends State<GamePage> {
             ),
       );
 
-      return;
-    }
-
-    final db = FirebaseDatabase.instance;
-    await db.ref('games/$currentGameId/players/uid1').update({'isDone': false});
-    await db.ref('games/$currentGameId/players/uid2').update({'isDone': false});
-
-    if (trackOver.length == over * 6) {
-      await ref.update({'score': score});
-
       if (currentInnings == 1) {
         int changePlayer = CurrentPlayer == 1 ? 2 : 1;
+        String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
+
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
@@ -115,6 +125,74 @@ class _GamePageState extends State<GamePage> {
                   CurrentPlayer: changePlayer,
                   over: widget.over,
                   currentInnings: 2,
+                  role: !role,
+                  playerId: newPlayerId,
+                ),
+          ),
+        );
+      } else if (currentInnings == 2) {
+        final ref1 = db.ref('games/$currentGameId/players/uid1');
+        final ref2 = db.ref('games/$currentGameId/players/uid2');
+
+        final snapshot1 = await ref1.child('score').get();
+        final snapshot2 = await ref2.child('score').get();
+
+        if (snapshot1.exists && snapshot2.exists) {
+          final score1 = snapshot1.value as int;
+          final score2 = snapshot2.value as int;
+
+          String winner;
+          if (score1 > score2) {
+            final nameSnap = await ref1.child('name').get();
+            winner = nameSnap.exists ? nameSnap.value.toString() : 'Player 1';
+          } else if (score2 > score1) {
+            final nameSnap = await ref2.child('name').get();
+            winner = nameSnap.exists ? nameSnap.value.toString() : 'Player 2';
+          } else {
+            winner = 'Match Tied';
+          }
+
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => ResultPage(
+                    score1: score1,
+                    score2: score2,
+                    winner: winner,
+                  ),
+            ),
+          );
+        }
+      }
+
+      hasPlayed = false;
+      return;
+    }
+
+    await db.ref('games/$currentGameId/players/uid1').update({'isDone': false});
+    await db.ref('games/$currentGameId/players/uid2').update({'isDone': false});
+
+    if (trackOver.length >= over * 6) {
+      score -= currentBall;
+      await ref.update({'score': score});
+
+      if (currentInnings == 1) {
+        int changePlayer = CurrentPlayer == 1 ? 2 : 1;
+        String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => GamePage(
+                  GameId: currentGameId,
+                  CurrentPlayer: changePlayer,
+                  over: widget.over,
+                  currentInnings: 2,
+                  role: !role,
+                  playerId: newPlayerId,
                 ),
           ),
         );
@@ -159,19 +237,144 @@ class _GamePageState extends State<GamePage> {
     hasPlayed = false;
   }
 
-  void updateCard(int currentBall) async {
-    final snapshot = await ref.child('isDone').get();
+  void listenToOpponentChanges() {
+    final db = FirebaseDatabase.instance;
+    String opponentId = currentId == 'uid1' ? 'uid2' : 'uid1';
+    DatabaseReference opponentRef = db.ref(
+      'games/$currentGameId/players/$opponentId',
+    );
 
-    bool isDoneNow = true;
-    if (snapshot.exists) {
-      final current = snapshot.value as bool;
-      isDoneNow = !current;
-    }
+    int changePlayer = CurrentPlayer == 1 ? 2 : 1;
+    String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
 
-    await ref.update({
-      'currentCard': currentBall.toString(),
-      'isDone': isDoneNow,
+    opponentRef.onChildChanged.listen((event) async {
+      final key = event.snapshot.key;
+      final value = event.snapshot.value;
+
+      if (key == 'isDone') {
+        print("🔄 Opponent isDone changed: $value");
+
+        final result = await checkCardsAndStatus();
+
+        if (result['bothDone']) {
+          print("✅ Both players have completed their move");
+
+          setState(() {
+            opponentCard = '${result['card2']}.png';
+            card = '${result['card1']}.png';
+          });
+
+          if (result['sameCard'] && currentInnings == 1) {
+            print("💥 Both players played the same card!");
+
+            if (!context.mounted) return;
+            DatabaseReference currentPlayerRef = db.ref(
+              'games/$currentGameId/players/$currentId/',
+            );
+
+            final snapshot = await currentPlayerRef.child('currentCard').get();
+            if (snapshot.exists) {
+              final String cardStr = snapshot.value.toString();
+              final int lastCardNumber = int.tryParse(cardStr) ?? 0;
+              score -= lastCardNumber;
+              print("[Vicky Bhai] Vicky na gethu da");
+              await ref.update({'score': score});
+            }
+
+            showDialog(
+              context: context,
+              builder:
+                  (_) => AlertDialog(
+                    title: const Text('OUT!'),
+                    content: const Text(
+                      'You are out. Both players chose the same card.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => GamePage(
+                                    GameId: currentGameId,
+                                    CurrentPlayer: changePlayer,
+                                    over: widget.over,
+                                    currentInnings: 2,
+                                    role: !role,
+                                    playerId: newPlayerId,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+            );
+          } else if (result['sameCard'] && currentInnings == 2) {
+            final ref1 = db.ref('games/$currentGameId/players/uid1');
+            final ref2 = db.ref('games/$currentGameId/players/uid2');
+
+            final snapshot1 = await ref1.child('score').get();
+            final snapshot2 = await ref2.child('score').get();
+
+            if (snapshot1.exists && snapshot2.exists) {
+              final score1 = snapshot1.value as int;
+              final score2 = snapshot2.value as int;
+
+              String winner;
+              if (score1 > score2) {
+                final nameSnap = await ref1.child('name').get();
+                winner =
+                    nameSnap.exists ? nameSnap.value.toString() : 'Player 1';
+              } else if (score2 > score1) {
+                final nameSnap = await ref2.child('name').get();
+                winner =
+                    nameSnap.exists ? nameSnap.value.toString() : 'Player 2';
+              } else {
+                winner = 'Match Tied';
+              }
+
+              if (!mounted) return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => ResultPage(
+                        score1: score1,
+                        score2: score2,
+                        winner: winner,
+                      ),
+                ),
+              );
+            }
+          }
+
+          await db.ref('games/$currentGameId/players/uid1').update({
+            'isDone': false,
+          });
+          await db.ref('games/$currentGameId/players/uid2').update({
+            'isDone': false,
+          });
+
+          print("♻️ isDone reset for both players");
+        }
+      }
     });
+  }
+
+  void updateCard(int currentBall) async {
+    final db = FirebaseDatabase.instance;
+    final ref = db.ref('games/$currentGameId/players/$currentId');
+
+    print('🔄 Updating card for player: $currentId');
+    print('🎯 Game ID: $currentGameId');
+    print('🃏 Selected card: $currentBall');
+
+    await ref.update({'currentCard': currentBall.toString(), 'isDone': true});
+
+    print('✅ Updated Firebase: currentCard = $currentBall, isDone = true');
   }
 
   Future<Map<String, dynamic>> checkCardsAndStatus() async {
@@ -195,16 +398,24 @@ class _GamePageState extends State<GamePage> {
       final bothDone = isDone1 && isDone2;
       final sameCard = card1 == card2;
 
-      return {'bothDone': bothDone, 'sameCard': sameCard};
+      print("Both Done : $bothDone , Same Card $sameCard");
+      return {
+        'bothDone': bothDone,
+        'sameCard': sameCard,
+        'card1': card1,
+        'card2': card2,
+      };
     }
 
-    return {'bothDone': false, 'sameCard': false};
+    return {'bothDone': false, 'sameCard': false, 'card1': '', 'card2': ''};
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    print("current Innings : $currentInnings");
+    print("[SCORE UPDATE]current Score : $score");
 
     return Scaffold(
       body: Container(
@@ -222,19 +433,40 @@ class _GamePageState extends State<GamePage> {
                   padding: EdgeInsets.only(left: screenWidth * 0.12),
                   child: Row(
                     children: [
-                      _bigContainer(
-                        screenWidth,
-                        screenHeight,
-                        text: '',
-                        color: const Color(0xFFD13737),
-                        height_: 0.20,
-                        width_: 0.35,
-                        font_size: 0.12,
-                        border: Border.all(color: Color(0xFF715018), width: 7),
+                      Container(
+                        height: screenHeight * 0.20,
+                        width: screenWidth * 0.35,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD13737),
+                          border: Border.all(
+                            color: const Color(0xFF715018),
+                            width: 7,
+                          ),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(25),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child:
+                            opponentCard.isNotEmpty
+                                ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    'assets/IMAGES/$opponentCard',
+                                    fit: BoxFit.contain,
+                                  ),
+                                )
+                                : const SizedBox.shrink(),
                       ),
                       SizedBox(width: screenWidth * 0.05),
 
-                      /// ✅ SHOW IMAGE INSTEAD OF TEXT
                       Container(
                         height: screenHeight * 0.20,
                         width: screenWidth * 0.35,
@@ -289,7 +521,12 @@ class _GamePageState extends State<GamePage> {
                               setState(() {
                                 card = '1.png';
                               });
-                              addCurrentCard(1);
+                              if (role == true) {
+                                addCurrentCard(1);
+                                print("[INFO] Batting so updating 1");
+                              } else {
+                                updateCard(1);
+                              }
                             },
                           ),
                           SizedBox(width: screenWidth * 0.05),
@@ -305,7 +542,12 @@ class _GamePageState extends State<GamePage> {
                               setState(() {
                                 card = '2.png';
                               });
-                              addCurrentCard(2);
+                              if (role == true) {
+                                addCurrentCard(2);
+                                print("[INFO] Batting so updating 2");
+                              } else {
+                                updateCard(2);
+                              }
                             },
                           ),
                           SizedBox(width: screenWidth * 0.05),
@@ -321,7 +563,12 @@ class _GamePageState extends State<GamePage> {
                               setState(() {
                                 card = '3.png';
                               });
-                              addCurrentCard(3);
+                              if (role == true) {
+                                addCurrentCard(3);
+                                print("[INFO] Batting so updating 3");
+                              } else {
+                                updateCard(3);
+                              }
                             },
                           ),
                         ],
@@ -341,7 +588,12 @@ class _GamePageState extends State<GamePage> {
                               setState(() {
                                 card = '4.png';
                               });
-                              addCurrentCard(4);
+                              if (role == true) {
+                                addCurrentCard(4);
+                                print("[INFO] Batting so updating 4");
+                              } else {
+                                updateCard(4);
+                              }
                             },
                           ),
                           SizedBox(width: screenWidth * 0.05),
@@ -357,7 +609,12 @@ class _GamePageState extends State<GamePage> {
                               setState(() {
                                 card = '5.png';
                               });
-                              addCurrentCard(5);
+                              if (role == true) {
+                                addCurrentCard(5);
+                                print("[INFO] Batting so updating 5");
+                              } else {
+                                updateCard(5);
+                              }
                             },
                           ),
                           SizedBox(width: screenWidth * 0.05),
@@ -373,7 +630,12 @@ class _GamePageState extends State<GamePage> {
                               setState(() {
                                 card = '6.png';
                               });
-                              addCurrentCard(6);
+                              if (role == true) {
+                                addCurrentCard(6);
+                                print("[INFO] Batting so updating 6");
+                              } else {
+                                updateCard(6);
+                              }
                             },
                           ),
                         ],
@@ -392,7 +654,13 @@ class _GamePageState extends State<GamePage> {
                       ),
                       SizedBox(width: screenWidth * 0.3),
                       GestureDetector(
-                        onTap: () => {addCurrentCard(0)},
+                        onTap:
+                            () => {
+                              if (role == true)
+                                {addCurrentCard(1)}
+                              else
+                                {updateCard(1)},
+                            },
                         child: _CircleContainer(
                           screenWidth,
                           screenHeight,
