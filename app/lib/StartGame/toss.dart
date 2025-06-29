@@ -58,9 +58,10 @@ class _FlipTossPageState extends State<FlipTossPage> {
 
     _flipTimer = Timer.periodic(oneSec, (timer) {
       setState(() {
-        _imageAsset = _imageAsset.contains("head")
-            ? "assets/IMAGES/tailsmini.png"
-            : "assets/IMAGES/head.png";
+        _imageAsset =
+            _imageAsset.contains("head")
+                ? "assets/IMAGES/tailsmini.png"
+                : "assets/IMAGES/head.png";
         _flipCount++;
 
         if (_flipCount >= numberOfFlips * 2) {
@@ -68,9 +69,10 @@ class _FlipTossPageState extends State<FlipTossPage> {
           _isFlipping = false;
           _flipCompleted = true;
 
-          _imageAsset = _finalResult == "head"
-              ? "assets/IMAGES/head.png"
-              : "assets/IMAGES/tailsmini.png";
+          _imageAsset =
+              _finalResult == "head"
+                  ? "assets/IMAGES/head.png"
+                  : "assets/IMAGES/tailsmini.png";
 
           _isResultCorrect = _userChoice == _finalResult;
         }
@@ -85,13 +87,11 @@ class _FlipTossPageState extends State<FlipTossPage> {
     final uid1Snapshot = await gameRef.child('uid1/name').get();
     final uid2Snapshot = await gameRef.child('uid2/name').get();
 
-    if (uid1Snapshot.exists &&
-        uid1Snapshot.value.toString() == playerName) {
+    if (uid1Snapshot.exists && uid1Snapshot.value.toString() == playerName) {
       return 'uid1';
     }
 
-    if (uid2Snapshot.exists &&
-        uid2Snapshot.value.toString() == playerName) {
+    if (uid2Snapshot.exists && uid2Snapshot.value.toString() == playerName) {
       return 'uid2';
     }
 
@@ -107,8 +107,10 @@ class _FlipTossPageState extends State<FlipTossPage> {
   Widget _buildChoiceButtons() {
     return Column(
       children: [
-        const Text("Choose Heads or Tails",
-            style: TextStyle(fontSize: 22, color: Colors.white)),
+        const Text(
+          "Choose Heads or Tails",
+          style: TextStyle(fontSize: 22, color: Colors.white),
+        ),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -124,31 +126,39 @@ class _FlipTossPageState extends State<FlipTossPage> {
 
   Widget _buildOptionButton(String label, String value) {
     return ElevatedButton(
-      onPressed: _isChoiceMade || _isFlipping || !_hasSelectedBatOrBowl
-          ? null
-          : () {
-              setState(() {
-                _userChoice = value;
-                _isChoiceMade = true;
-              });
-              _startFlipAnimation();
-            },
+      onPressed:
+          _isChoiceMade || _isFlipping || !_hasSelectedBatOrBowl
+              ? null
+              : () {
+                setState(() {
+                  _userChoice = value;
+                  _isChoiceMade = true;
+                });
+                _startFlipAnimation();
+              },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      child: Text(label,
-          style: const TextStyle(
-              fontSize: 18, color: Color(0xFFD13737), fontWeight: FontWeight.bold)),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 18,
+          color: Color(0xFFD13737),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
   Widget _buildBatOrBowlButtonsBeforeToss() {
     return Column(
       children: [
-        const Text("Select Bat or Bowl before Toss",
-            style: TextStyle(fontSize: 20, color: Colors.white)),
+        const Text(
+          "Select Bat or Bowl before Toss",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -175,16 +185,19 @@ class _FlipTossPageState extends State<FlipTossPage> {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      child: Text(choice,
-          style: const TextStyle(
-              fontSize: 18, color: Color(0xFFD13737), fontWeight: FontWeight.bold)),
+      child: Text(
+        choice,
+        style: const TextStyle(
+          fontSize: 18,
+          color: Color(0xFFD13737),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
   Widget _buildLetsGoButton() {
     if (!_flipCompleted || _role == null) return const SizedBox.shrink();
-
-    int currentPlayer = _role! ? 1 : 2;
 
     return ElevatedButton(
       onPressed: () async {
@@ -193,14 +206,14 @@ class _FlipTossPageState extends State<FlipTossPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => GamePage(
-              GameId: gameId,
-              CurrentPlayer: currentPlayer,
-              over: overs,
-              currentInnings: 1,
-              role: _role!,
-              playerId: playerId,
-            ),
+            builder:
+                (context) => GamePage(
+                  GameId: gameId,
+                  over: overs,
+                  currentInnings: 1,
+                  role: _role!,
+                  playerId: playerId,
+                ),
           ),
         );
       },
@@ -212,7 +225,10 @@ class _FlipTossPageState extends State<FlipTossPage> {
       child: const Text(
         'Let\'s Go',
         style: TextStyle(
-            fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFD13737)),
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFFD13737),
+        ),
       ),
     );
   }
@@ -231,9 +247,14 @@ class _FlipTossPageState extends State<FlipTossPage> {
             if (_hasSelectedBatOrBowl && !_isChoiceMade) _buildChoiceButtons(),
             const SizedBox(height: 20),
             if (_isChoiceMade && _flipCompleted)
-              Text("Result: ${_finalResult == 'head' ? 'Heads' : 'Tails'}",
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text(
+                "Result: ${_finalResult == 'head' ? 'Heads' : 'Tails'}",
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             const SizedBox(height: 30),
             _buildLetsGoButton(),
           ],

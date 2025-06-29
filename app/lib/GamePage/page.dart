@@ -5,7 +5,6 @@ import 'package:firebase_database/firebase_database.dart';
 
 class GamePage extends StatefulWidget {
   final int over;
-  final int CurrentPlayer;
   final String GameId;
   final int currentInnings;
   final bool role;
@@ -13,7 +12,6 @@ class GamePage extends StatefulWidget {
   const GamePage({
     Key? key,
     required this.over,
-    required this.CurrentPlayer,
     required this.GameId,
     required this.currentInnings,
     required this.role,
@@ -26,9 +24,6 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   String card = '';
   String opponentCard = '';
-  bool Batting = false;
-  bool Bowling = false;
-  int CurrentPlayer = 1;
   int score = 0;
   List<int> trackOver = [];
 
@@ -49,9 +44,8 @@ class _GamePageState extends State<GamePage> {
       'games/$currentGameId/players/$currentId',
     );
     over = widget.over;
-    CurrentPlayer = widget.CurrentPlayer;
     currentInnings = widget.currentInnings;
-    role = widget.CurrentPlayer == 1;
+    role = widget.role;
 
     listenToOpponentChanges();
   }
@@ -112,9 +106,6 @@ class _GamePageState extends State<GamePage> {
       );
 
       if (currentInnings == 1) {
-        int changePlayer = CurrentPlayer == 1 ? 2 : 1;
-        String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
-
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
@@ -122,11 +113,10 @@ class _GamePageState extends State<GamePage> {
             builder:
                 (context) => GamePage(
                   GameId: currentGameId,
-                  CurrentPlayer: changePlayer,
                   over: widget.over,
                   currentInnings: 2,
                   role: !role,
-                  playerId: newPlayerId,
+                  playerId: currentId,
                 ),
           ),
         );
@@ -179,8 +169,7 @@ class _GamePageState extends State<GamePage> {
       await ref.update({'score': score});
 
       if (currentInnings == 1) {
-        int changePlayer = CurrentPlayer == 1 ? 2 : 1;
-        String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
+        // String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
@@ -188,11 +177,10 @@ class _GamePageState extends State<GamePage> {
             builder:
                 (context) => GamePage(
                   GameId: currentGameId,
-                  CurrentPlayer: changePlayer,
                   over: widget.over,
                   currentInnings: 2,
                   role: !role,
-                  playerId: newPlayerId,
+                  playerId: currentId,
                 ),
           ),
         );
@@ -243,9 +231,6 @@ class _GamePageState extends State<GamePage> {
     DatabaseReference opponentRef = db.ref(
       'games/$currentGameId/players/$opponentId',
     );
-
-    int changePlayer = CurrentPlayer == 1 ? 2 : 1;
-    String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
 
     opponentRef.onChildChanged.listen((event) async {
       final key = event.snapshot.key;
@@ -298,11 +283,10 @@ class _GamePageState extends State<GamePage> {
                               builder:
                                   (context) => GamePage(
                                     GameId: currentGameId,
-                                    CurrentPlayer: changePlayer,
                                     over: widget.over,
                                     currentInnings: 2,
                                     role: !role,
-                                    playerId: newPlayerId,
+                                    playerId: currentId,
                                   ),
                             ),
                           );
