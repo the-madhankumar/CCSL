@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../GamePage/page.dart';
+import '../GamePage/BattingPage.dart';
 
 class FlipTossPage extends StatefulWidget {
   final String gameId;
@@ -207,7 +207,7 @@ class _FlipTossPageState extends State<FlipTossPage> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => GamePage(
+                (context) => BattingGamePage(
                   GameId: gameId,
                   over: overs,
                   currentInnings: 1,

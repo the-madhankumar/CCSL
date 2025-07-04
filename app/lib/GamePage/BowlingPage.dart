@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class GamePage extends StatefulWidget {
+class BowlingGamePage extends StatefulWidget {
   final int over;
   final String GameId;
   final int currentInnings;
   final bool role;
   final String playerId;
-  const GamePage({
+  const BowlingGamePage({
     Key? key,
     required this.over,
     required this.GameId,
@@ -18,10 +18,10 @@ class GamePage extends StatefulWidget {
     required this.playerId,
   }) : super(key: key);
   @override
-  State<GamePage> createState() => _GamePageState();
+  State<BowlingGamePage> createState() => _BowlingGamePageState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _BowlingGamePageState extends State<BowlingGamePage> {
   String card = '';
   String opponentCard = '';
   int score = 0;
@@ -111,7 +111,7 @@ class _GamePageState extends State<GamePage> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => GamePage(
+                (context) => BowlingGamePage(
                   GameId: currentGameId,
                   over: widget.over,
                   currentInnings: 2,
@@ -175,7 +175,7 @@ class _GamePageState extends State<GamePage> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => GamePage(
+                (context) => BowlingGamePage(
                   GameId: currentGameId,
                   over: widget.over,
                   currentInnings: 2,
@@ -281,7 +281,7 @@ class _GamePageState extends State<GamePage> {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => GamePage(
+                                  (context) => BowlingGamePage(
                                     GameId: currentGameId,
                                     over: widget.over,
                                     currentInnings: 2,
