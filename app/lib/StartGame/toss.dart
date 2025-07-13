@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:app/GamePage/BowlingPage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../GamePage/BattingPage.dart';
@@ -203,19 +204,34 @@ class _FlipTossPageState extends State<FlipTossPage> {
       onPressed: () async {
         String playerId = await determinePlayerId();
 
-        Navigator.pushReplacement(
+        if (_role == true) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => BattingGamePage(
+                    GameId: gameId,
+                    over: overs,
+                    currentInnings: 1,
+                    playerId: playerId,
+                  ),
+            ),
+          );
+        }
+        else{
+          Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder:
-                (context) => BattingGamePage(
+                (context) => BowlingGamePage(
                   GameId: gameId,
                   over: overs,
                   currentInnings: 1,
-                  role: _role!,
                   playerId: playerId,
                 ),
           ),
         );
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,

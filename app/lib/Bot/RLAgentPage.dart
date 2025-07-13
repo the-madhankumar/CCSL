@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:developer' as developer;
 import 'dart:math';
 
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -14,7 +16,16 @@ Future<void> main() async {
 
 class RLAgentPage extends StatefulWidget {
   final int overs;
-  const RLAgentPage({super.key, required this.overs});
+  final int currentInnings;
+  final int player1;
+  final int botscore;
+  const RLAgentPage({
+    super.key,
+    required this.overs,
+    required this.currentInnings,
+    required this.player1,
+    required this.botscore,
+  });
 
   @override
   State<RLAgentPage> createState() => _RLAgentPageState();
@@ -27,28 +38,146 @@ class _RLAgentPageState extends State<RLAgentPage> {
   int botCard = 0;
   String boTCard = '';
 
-  int over = 2;
   late int powerCard;
   late int totalBalls;
+  late int currentInnings;
+  late int player1;
+  late int botScore;
+  late int overs;
   List<int> trackOver = [];
   bool freeHit = false;
   bool cooldown = false;
-  int player1 = 0;
-  int botScore = 0;
+  late String loadTable;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    powerCard = over * 2;
-    totalBalls = over * 6;
-    loadQTable();
+    initGame();
   }
 
-  void addCurrentCard(int currentBall) {
-    setState(() {
-      trackOver.add(currentBall);
-      player1 = (player1 + currentBall);
-    });
+  Future<void> initGame() async {
+    print("initGame started");
+
+    try {
+      powerCard = widget.overs * 2;
+      totalBalls = widget.overs * 6;
+      currentInnings = widget.currentInnings;
+      player1 = widget.player1;
+      botScore = widget.botscore;
+      overs = widget.overs;
+
+      print("Assigned all values");
+
+      if (currentInnings == 1) {
+        loadTable = "RLAgentDataBowling";
+      } else {
+        loadTable = "RLAgentDataBatting";
+      }
+
+      bool isLoaded = await loadQTable();
+
+      print("loadQTable returned: $isLoaded");
+
+      if (isLoaded) {
+        setState(() {
+          isLoading = false;
+        });
+        print("current Innings $currentInnings");
+      } else {
+        print("QTable loading failed.");
+      }
+    } catch (e, stack) {
+      print("🔥 Error in initGame: $e");
+      print(stack);
+    }
+  }
+
+  Future<void> addCurrentCard(int currentBall) async {
+    if ((boTCard == card && currentInnings == 1) ||
+        (trackOver.length >= overs * 6 && currentInnings == 1)) {
+      setState(() {
+        trackOver.removeLast();
+      });
+      print("First Innings Over : $overs");
+      await showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text('OUT!'),
+              content: Text(
+                'You are out. Both players chose the same card and your score $player1',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => RLAgentPage(
+                              overs: overs,
+                              currentInnings: 2,
+                              player1: player1,
+                              botscore: 0,
+                            ),
+                      ),
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+    } else if ((boTCard == card && currentInnings == 2) ||
+        (trackOver.length >= overs * 6 && currentInnings == 2)) {
+      String winner;
+      if (player1 > botScore) {
+        winner = "You";
+      } else {
+        winner = "Bot";
+      }
+      await showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text('OUT!'),
+              content: Text(
+                'You are out. Both players chose the same card and your score $player1',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ResultPage(
+                              score1: player1,
+                              score2: botScore,
+                              winner: winner,
+                            ),
+                      ),
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+    }
+
+    if (currentInnings == 1) {
+      setState(() {
+        trackOver.add(currentBall);
+        player1 = (player1 + currentBall);
+      });
+    } else {
+      setState(() {
+        trackOver.add(currentBall);
+        botScore = (botScore + currentBall);
+      });
+    }
   }
 
   void onCardTap(int value) {
@@ -161,14 +290,14 @@ class _RLAgentPageState extends State<RLAgentPage> {
     }
   }
 
-  Future<void> loadQTable() async {
-    final dbRef = FirebaseDatabase.instance.ref('/RLAgentDataBowling');
+  Future<bool> loadQTable() async {
+    final dbRef = FirebaseDatabase.instance.ref('/$loadTable');
     final snapshot = await dbRef.get();
 
     if (!snapshot.exists || snapshot.value == null) {
       print('[ERROR] Q-table data is missing or null.');
       setState(() => dataExists = false);
-      return;
+      return false;
     }
 
     try {
@@ -205,9 +334,11 @@ class _RLAgentPageState extends State<RLAgentPage> {
       });
 
       print('✅ Q-table loaded with ${qTable.length} states');
+      return true;
     } catch (e) {
       print('[ERROR] Failed to parse Q-table snapshot: $e');
       setState(() => dataExists = false);
+      return false;
     }
   }
 
@@ -221,23 +352,38 @@ class _RLAgentPageState extends State<RLAgentPage> {
   }) async {
     print("[INFO] Entering Bellman update");
 
+    // Check if current and next states exist in Q-table
     if (!qTable.containsKey(currentState) || !qTable.containsKey(nextState)) {
       print('[ERROR] Missing state(s): $currentState or $nextState');
       return;
     }
 
-    // Convert state maps safely
-    final currentStateMap = Map<String, double>.from(
-      Map<String, dynamic>.from(qTable[currentState] ?? {})
-        ..removeWhere((k, _) => !k.startsWith("A")),
-    );
+    // Extract the maps for current and next state
+    Map<String, dynamic> rawCurrentMap = qTable[currentState];
+    Map<String, dynamic> rawNextMap = qTable[nextState];
 
-    final nextStateMap = Map<String, double>.from(
-      Map<String, dynamic>.from(qTable[nextState] ?? {})
-        ..removeWhere((k, _) => !k.startsWith("A")),
-    );
+    // Convert to <String, double> and remove unwanted keys
+    Map<String, double> currentStateMap = {};
+    for (var key in rawCurrentMap.keys) {
+      if (key.startsWith("A")) {
+        currentStateMap[key] = rawCurrentMap[key].toDouble();
+      }
+    }
 
-    // Ensure the action exists
+    Map<String, double> nextStateMap = {};
+    for (var key in rawNextMap.keys) {
+      if (key.startsWith("A")) {
+        nextStateMap[key] = rawNextMap[key].toDouble();
+      }
+    }
+
+    // Show available actions
+    print(
+      "💡 Actions available in current state: ${currentStateMap.keys.toList()}",
+    );
+    print("🎯 Requested action: $action");
+
+    // Check if action is valid
     if (!currentStateMap.containsKey(action)) {
       print(
         '[ERROR] Action "$action" not found in current state "$currentState"',
@@ -245,21 +391,27 @@ class _RLAgentPageState extends State<RLAgentPage> {
       return;
     }
 
-    // Q-learning Bellman update
-    final oldQ = currentStateMap[action] ?? 0.0;
-    final maxNextQ = nextStateMap.values.fold<double>(
-      double.negativeInfinity,
-      (a, b) => a > b ? a : b,
-    );
-    final newQ = oldQ + alpha * (reward + gamma * maxNextQ - oldQ);
+    // Get current Q value
+    double oldQ = currentStateMap[action] ?? 0.0;
 
-    // Update in local Q-table
+    // Find max Q value in nextStateMap
+    double maxNextQ = double.negativeInfinity;
+    for (var q in nextStateMap.values) {
+      if (q > maxNextQ) {
+        maxNextQ = q;
+      }
+    }
+
+    // Bellman update formula
+    double newQ = oldQ + alpha * (reward + gamma * maxNextQ - oldQ);
+
+    // Update Q-table locally
     currentStateMap[action] = newQ;
     qTable[currentState] = currentStateMap;
 
-    // Sync with Firebase
+    // Update Firebase
     final ref = FirebaseDatabase.instance.ref(
-      '/RLAgentDataBowling/$currentState',
+      '/$loadTable/$currentState',
     );
     await ref.set(currentStateMap);
 
@@ -268,6 +420,20 @@ class _RLAgentPageState extends State<RLAgentPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        body: Container(
+          color: const Color.fromARGB(255, 249, 203, 166),
+          child: Center(
+            child: LoadingAnimationWidget.flickr(
+              size: 200,
+              leftDotColor: const Color(0xFFD13737),
+              rightDotColor: const Color(0xFFD19837),
+            ),
+          ),
+        ),
+      );
+    }
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 

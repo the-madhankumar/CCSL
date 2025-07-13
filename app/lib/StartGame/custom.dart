@@ -209,7 +209,7 @@ class _CustomState extends State<Custom> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => RLAgentPage(overs: overs),
+                                builder: (context) => RLAgentPage(overs: overs, currentInnings: 1, player1: 0, botscore: 0,),
                               ),
                             );
                           }
@@ -226,7 +226,7 @@ class _CustomState extends State<Custom> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RLAgentPage(overs: 2),
+                          builder: (context) => RLAgentPage(overs: 2, currentInnings: 1, player1: 0, botscore: 0,),
                         ),
                       );
                     },

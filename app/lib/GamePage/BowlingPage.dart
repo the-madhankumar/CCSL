@@ -1,3 +1,4 @@
+import 'package:app/GamePage/BattingPage.dart';
 import 'package:app/Result/page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,14 +8,12 @@ class BowlingGamePage extends StatefulWidget {
   final int over;
   final String GameId;
   final int currentInnings;
-  final bool role;
   final String playerId;
   const BowlingGamePage({
     Key? key,
     required this.over,
     required this.GameId,
     required this.currentInnings,
-    required this.role,
     required this.playerId,
   }) : super(key: key);
   @override
@@ -24,7 +23,6 @@ class BowlingGamePage extends StatefulWidget {
 class _BowlingGamePageState extends State<BowlingGamePage> {
   String card = '';
   String opponentCard = '';
-  int score = 0;
   List<int> trackOver = [];
 
   late String currentId;
@@ -45,7 +43,6 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
     );
     over = widget.over;
     currentInnings = widget.currentInnings;
-    role = widget.role;
 
     listenToOpponentChanges();
   }
@@ -58,7 +55,6 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
 
     setState(() {
       trackOver.add(currentBall);
-      score += currentBall;
       card = '$currentBall.png';
     });
 
@@ -79,12 +75,8 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
         "[MORE THAN LEO UPDATE] sameCard Appears when vicky senior on fire",
       );
       setState(() {
-        score -= currentBall;
         trackOver.removeLast();
       });
-
-      score -= currentBall;
-      await ref.update({'score': score});
 
       await showDialog(
         context: context,
@@ -115,7 +107,6 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
                   GameId: currentGameId,
                   over: widget.over,
                   currentInnings: 2,
-                  role: !role,
                   playerId: currentId,
                 ),
           ),
@@ -165,9 +156,6 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
     await db.ref('games/$currentGameId/players/uid2').update({'isDone': false});
 
     if (trackOver.length >= over * 6) {
-      score -= currentBall;
-      await ref.update({'score': score});
-
       if (currentInnings == 1) {
         // String newPlayerId = currentId == 'uid1' ? 'uid2' : 'uid1';
         if (!mounted) return;
@@ -175,11 +163,10 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => BowlingGamePage(
+                (context) => BattingGamePage(
                   GameId: currentGameId,
                   over: widget.over,
                   currentInnings: 2,
-                  role: !role,
                   playerId: currentId,
                 ),
           ),
@@ -227,7 +214,13 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
 
   void listenToOpponentChanges() {
     final db = FirebaseDatabase.instance;
-    String opponentId = currentId == 'uid1' ? 'uid2' : 'uid1';
+    String opponentId;
+    if(currentId == 'uid1'){
+      opponentId = 'uid2';
+    }
+    else{
+      opponentId = 'uid1';
+    }
     DatabaseReference opponentRef = db.ref(
       'games/$currentGameId/players/$opponentId',
     );
@@ -244,27 +237,23 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
         if (result['bothDone']) {
           print("✅ Both players have completed their move");
 
-          setState(() {
-            opponentCard = '${result['card2']}.png';
-            card = '${result['card1']}.png';
-          });
+          if(currentId == 'uid1'){
+            setState(() {
+              opponentCard = '${result['card2']}.png';
+              card = '${result['card1']}.png';
+            });
+          }
+          else{
+            setState(() {
+              opponentCard = '${result['card1']}.png';
+              card = '${result['card2']}.png';
+            });
+          }
 
           if (result['sameCard'] && currentInnings == 1) {
             print("💥 Both players played the same card!");
 
             if (!context.mounted) return;
-            DatabaseReference currentPlayerRef = db.ref(
-              'games/$currentGameId/players/$currentId/',
-            );
-
-            final snapshot = await currentPlayerRef.child('currentCard').get();
-            if (snapshot.exists) {
-              final String cardStr = snapshot.value.toString();
-              final int lastCardNumber = int.tryParse(cardStr) ?? 0;
-              score -= lastCardNumber;
-              print("[Vicky Bhai] Vicky na gethu da");
-              await ref.update({'score': score});
-            }
 
             showDialog(
               context: context,
@@ -281,11 +270,10 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => BowlingGamePage(
+                                  (context) => BattingGamePage(
                                     GameId: currentGameId,
                                     over: widget.over,
                                     currentInnings: 2,
-                                    role: !role,
                                     playerId: currentId,
                                   ),
                             ),
@@ -399,7 +387,6 @@ class _BowlingGamePageState extends State<BowlingGamePage> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     print("current Innings : $currentInnings");
-    print("[SCORE UPDATE]current Score : $score");
 
     return Scaffold(
       body: Container(

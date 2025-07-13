@@ -141,7 +141,7 @@ class StartGame extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RLAgentPage(overs: 2,)),
+                          MaterialPageRoute(builder: (context) => RLAgentPage(overs: 1, currentInnings: 1, player1: 0, botscore: 0,)),
                         );
                       },
                       child: _bigContainer(
