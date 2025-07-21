@@ -94,98 +94,178 @@ class _RLAgentPageState extends State<RLAgentPage> {
   }
 
   Future<void> addCurrentCard(int currentBall) async {
-    if ((boTCard == card && currentInnings == 1) ||
-        (trackOver.length >= overs * 6 && currentInnings == 1)) {
-      setState(() {
-        trackOver.removeLast();
-      });
-      print("First Innings Over : $overs");
-      await showDialog(
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: const Text('OUT!'),
-              content: Text(
-                'You are out. Both players chose the same card and your score $player1',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => RLAgentPage(
-                              overs: overs,
-                              currentInnings: 2,
-                              player1: player1,
-                              botscore: 0,
-                            ),
-                      ),
-                    );
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-      );
-    } else if ((boTCard == card && currentInnings == 2) ||
-        (trackOver.length >= overs * 6 && currentInnings == 2)) {
-      String winner;
-      if (player1 > botScore) {
-        winner = "You";
+    int value = currentInnings == 1 ? currentBall : botCard;
+
+    bool isOut =
+        (boTCard == card && currentInnings == 1) ||
+        (boTCard == card && currentInnings == 2);
+
+    bool isOver = trackOver.length >= overs * 6;
+
+    if (isOut || isOver) {
+      String textDialog;
+      if (isOut) {
+        textDialog =
+            "You are out. Both players chose the same card. Your Score : ";
       } else {
-        winner = "Bot";
+        textDialog = "End of innings.\n";
       }
-      await showDialog(
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: const Text('OUT!'),
-              content: Text(
-                'You are out. Both players chose the same card and your score $player1',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ResultPage(
-                              score1: player1,
-                              score2: botScore,
-                              winner: winner,
-                            ),
-                      ),
-                    );
-                  },
-                  child: const Text('OK'),
+      if (currentInnings == 1) {
+        trackOver.removeLast();
+        await showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                backgroundColor: Colors.black87,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ],
-            ),
-      );
+                title: Row(
+                  children: const [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.redAccent,
+                      size: 28,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      'OUT!',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ],
+                ),
+                content: Text(
+                  '$textDialog $player1',
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.greenAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => RLAgentPage(
+                                overs: overs,
+                                currentInnings: 2,
+                                player1: player1,
+                                botscore: 0,
+                              ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        );
+      } else {
+        String winner = player1 > botScore ? "You" : "Bot";
+        await showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                backgroundColor: Colors.blueGrey.shade900,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: Row(
+                  children: const [
+                    Icon(Icons.celebration, color: Colors.amber, size: 28),
+                    SizedBox(width: 10),
+                    Text(
+                      'Match Over',
+                      style: TextStyle(
+                        color: Colors.amber,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ],
+                ),
+                content: Text(
+                  '$textDialog',
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                actions: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.lightGreenAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => ResultPage(
+                                score1: player1,
+                                score2: botScore,
+                                winner: winner,
+                              ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        );
+      }
+      return;
     }
 
-    if (currentInnings == 1) {
-      setState(() {
-        trackOver.add(currentBall);
-        player1 = (player1 + currentBall);
-      });
-    } else {
-      setState(() {
-        trackOver.add(currentBall);
-        botScore = (botScore + currentBall);
-      });
-    }
+    setState(() {
+      trackOver.add(value);
+      if (currentInnings == 1) {
+        player1 += value;
+      } else {
+        botScore += value;
+      }
+    });
   }
 
-  void onCardTap(int value) {
+  void onCardTap(int value) async {
     setState(() {
-      addCurrentCard(value);
       card = '$value.png';
     });
-    handleCardPlay(value);
+
+    await handleCardPlay(value);
+    await addCurrentCard(value);
   }
 
   void setBotCard(int value) {
@@ -253,7 +333,6 @@ class _RLAgentPageState extends State<RLAgentPage> {
     debugPrint('➡️ Next State: $nextState');
     debugPrint('🏏 Reward: $reward');
 
-    // Bot plays after player
     botCard = getBestBotAction(nextState);
     debugPrint('[BOT] Best action from Q-table: $botCard');
     debugPrint('$botCard');
@@ -410,9 +489,7 @@ class _RLAgentPageState extends State<RLAgentPage> {
     qTable[currentState] = currentStateMap;
 
     // Update Firebase
-    final ref = FirebaseDatabase.instance.ref(
-      '/$loadTable/$currentState',
-    );
+    final ref = FirebaseDatabase.instance.ref('/$loadTable/$currentState');
     await ref.set(currentStateMap);
 
     print("✅ Q-value updated for [$currentState][$action] = $newQ");
