@@ -50,6 +50,9 @@ class _RLAgentPageState extends State<RLAgentPage> {
   late String loadTable;
   bool isLoading = true;
 
+  late String currentPlayer;
+  late int currentDisplayScore;
+
   @override
   void initState() {
     super.initState();
@@ -71,8 +74,12 @@ class _RLAgentPageState extends State<RLAgentPage> {
 
       if (currentInnings == 1) {
         loadTable = "RLAgentDataBowling";
+        currentPlayer = "YOUR";
+        currentDisplayScore = player1;
       } else {
         loadTable = "RLAgentDataBatting";
+        currentPlayer = "BOT";
+        currentDisplayScore = botScore;
       }
 
       bool isLoaded = await loadQTable();
@@ -256,6 +263,7 @@ class _RLAgentPageState extends State<RLAgentPage> {
       } else {
         botScore += value;
       }
+      currentDisplayScore += value;
     });
   }
 
@@ -524,14 +532,32 @@ class _RLAgentPageState extends State<RLAgentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: screenHeight * 0.05),
-                _ContainerSet(screenWidth, screenHeight),
+                Padding(
+                  padding: EdgeInsets.all(screenWidth * 0.05),
+                  child: Text(
+                    'GAME PAGE',
+                    style: GoogleFonts.jacquesFrancoisShadow(
+                      fontSize: screenWidth * 0.12,
+                      color: const Color(0xFFD9D9D9),
+                    ),
+                  ),
+                ),
+                _bigContainer(
+                  screenWidth,
+                  screenHeight,
+                  text: '$currentPlayer SCORE : $currentDisplayScore',
+                  color: const Color(0xFFD19837),
+                  height_: 0.10,
+                  width_: 0.85,
+                  font_size: 0.10,
+                ),
+                SizedBox(height: screenHeight * 0.02),
                 Padding(
                   padding: EdgeInsets.only(left: screenWidth * 0.12),
                   child: Row(
                     children: [
                       Container(
-                        height: screenHeight * 0.20,
+                        height: screenHeight * 0.25,
                         width: screenWidth * 0.35,
                         decoration: BoxDecoration(
                           color: const Color(0xFFD13737),
@@ -566,7 +592,7 @@ class _RLAgentPageState extends State<RLAgentPage> {
 
                       /// ✅ SHOW IMAGE INSTEAD OF TEXT
                       Container(
-                        height: screenHeight * 0.20,
+                        height: screenHeight * 0.25,
                         width: screenWidth * 0.35,
                         decoration: BoxDecoration(
                           color: const Color(0xFFD13737),
@@ -600,7 +626,7 @@ class _RLAgentPageState extends State<RLAgentPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.05),
+                SizedBox(height: screenHeight * 0.04),
                 Padding(
                   padding: EdgeInsets.only(left: screenWidth * 0.13),
                   child: Column(
@@ -641,7 +667,7 @@ class _RLAgentPageState extends State<RLAgentPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: screenHeight * 0.05),
+                      SizedBox(height: screenHeight * 0.02),
                       Row(
                         children: [
                           _bigContainer(
@@ -692,7 +718,7 @@ class _RLAgentPageState extends State<RLAgentPage> {
                       ),
                       SizedBox(width: screenWidth * 0.3),
                       GestureDetector(
-                        onTap: () => onCardTap(6),
+                        onTap: () => onCardTap(0),
                         child: _CircleContainer(
                           screenWidth,
                           screenHeight,
@@ -749,64 +775,6 @@ Widget _bigContainer(
           ),
         ),
       ),
-    ),
-  );
-}
-
-Widget _ContainerSet(double screenWidth, double screenHeight) {
-  return Container(
-    height: screenHeight * 0.25,
-    width: screenWidth * 0.9,
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 30),
-          child: Row(
-            children: [
-              _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: '',
-                color: const Color(0xFFD19837),
-                height_: 0.07,
-                width_: 0.21,
-                font_size: 0.10,
-              ),
-              SizedBox(width: screenWidth * 0.05),
-              _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: '',
-                color: const Color(0xFFD19837),
-                height_: 0.07,
-                width_: 0.21,
-                font_size: 0.10,
-              ),
-              SizedBox(width: screenWidth * 0.05),
-              _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: '',
-                color: const Color(0xFFD19837),
-                height_: 0.07,
-                width_: 0.21,
-                font_size: 0.10,
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: screenHeight * 0.02),
-        _bigContainer(
-          screenWidth,
-          screenHeight,
-          text: '',
-          color: const Color(0xFFD19837),
-          height_: 0.07,
-          width_: 0.85,
-          font_size: 0.12,
-        ),
-      ],
     ),
   );
 }

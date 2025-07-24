@@ -1,8 +1,6 @@
 import 'package:app/Bot/RLAgentPage.dart';
 import 'package:app/StartGame/About.dart';
-import 'package:app/StartGame/custom.dart';
 import 'package:app/StartGame/rule.dart';
-import 'package:app/StartGame/toss.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,6 +12,7 @@ class StartGame extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     double fontSize = screenWidth * 0.07;
+    late int overs = 1;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -72,55 +71,251 @@ class StartGame extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _bigContainer(
-                          screenWidth,
-                          screenHeight,
-                          text: '3',
-                          color: const Color(0xFFD19837),
-                          height_: 0.10,
-                          width_: 0.25,
-                          font_size: 0.10,
+                        GestureDetector(
+                          onTap: () {
+                            overs = 1;
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: const Color(0xFFD13737),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  title: const Text(
+                                    'Overs Selected',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF333333),
+                                    ),
+                                  ),
+                                  content: const Text(
+                                    'You have selected 1 over.\nWould you like to continue?',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop(); // Close dialog
+                                      },
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Color.fromARGB(255, 255, 169, 169)),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(
+                                          0xFF4CAF50,
+                                        ), // Green
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => RLAgentPage(
+                                                  overs: overs,
+                                                  currentInnings: 1,
+                                                  player1: 0,
+                                                  botscore: 0,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('Continue'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: _bigContainer(
+                            screenWidth,
+                            screenHeight,
+                            text: '1',
+                            color: const Color(0xFFD19837),
+                            height_: 0.10,
+                            width_: 0.25,
+                            font_size: 0.10,
+                          ),
                         ),
+
                         SizedBox(width: screenWidth * 0.05),
-                        _bigContainer(
-                          screenWidth,
-                          screenHeight,
-                          text: '5',
-                          color: const Color(0xFFD19837),
-                          height_: 0.10,
-                          width_: 0.25,
-                          font_size: 0.10,
+                        GestureDetector(
+                          onTap: () {
+                            overs = 3;
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: const Color(0xFFD13737),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  title: const Text(
+                                    'Overs Selected',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF333333),
+                                    ),
+                                  ),
+                                  content: const Text(
+                                    'You have selected 3 overs.\nWould you like to continue?',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop(); // Close dialog
+                                      },
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Color.fromARGB(255, 255, 169, 169)),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(
+                                          0xFF4CAF50,
+                                        ), // Green
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => RLAgentPage(
+                                                  overs: overs,
+                                                  currentInnings: 1,
+                                                  player1: 0,
+                                                  botscore: 0,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('Continue'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: _bigContainer(
+                            screenWidth,
+                            screenHeight,
+                            text: '3',
+                            color: const Color(0xFFD19837),
+                            height_: 0.10,
+                            width_: 0.25,
+                            font_size: 0.10,
+                          ),
                         ),
+
                         SizedBox(width: screenWidth * 0.05),
-                        _bigContainer(
-                          screenWidth,
-                          screenHeight,
-                          text: '10',
-                          color: const Color(0xFFD19837),
-                          height_: 0.10,
-                          width_: 0.25,
-                          font_size: 0.10,
+                        GestureDetector(
+                          onTap: () {
+                            overs = 5;
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: const Color(0xFFD13737),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  title: const Text(
+                                    'Overs Selected',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF333333),
+                                    ),
+                                  ),
+                                  content: const Text(
+                                    'You have selected 5 oves.\nWould you like to continue?',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop(); // Close dialog
+                                      },
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Color.fromARGB(255, 255, 169, 169)),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(
+                                          0xFF4CAF50,
+                                        ), // Green
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => RLAgentPage(
+                                                  overs: overs,
+                                                  currentInnings: 1,
+                                                  player1: 0,
+                                                  botscore: 0,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('Continue'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: _bigContainer(
+                            screenWidth,
+                            screenHeight,
+                            text: '5',
+                            color: const Color(0xFFD19837),
+                            height_: 0.10,
+                            width_: 0.25,
+                            font_size: 0.10,
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: screenWidth * 0.001),
-                    child: GestureDetector(
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Custom()),
-                          ),
-                      child: _bigContainer(
-                        screenWidth,
-                        screenHeight,
-                        text: 'Custom',
-                        color: const Color(0xFFD19837),
-                        height_: 0.10,
-                        width_: 0.85,
-                        font_size: 0.12,
-                      ),
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.05),
@@ -141,7 +336,15 @@ class StartGame extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RLAgentPage(overs: 1, currentInnings: 1, player1: 0, botscore: 0,)),
+                          MaterialPageRoute(
+                            builder:
+                                (context) => RLAgentPage(
+                                  overs: overs,
+                                  currentInnings: 1,
+                                  player1: 0,
+                                  botscore: 0,
+                                ),
+                          ),
                         );
                       },
                       child: _bigContainer(

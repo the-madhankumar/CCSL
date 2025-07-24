@@ -64,9 +64,9 @@ class ResultPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
-            _ContainerSet(screenWidth, screenHeight, score1),
+            _ContainerSet(screenWidth, screenHeight, score1, "Your Score"),
             SizedBox(height: screenHeight * 0.05),
-            _ContainerSet(screenWidth, screenHeight, score2),
+            _ContainerSet(screenWidth, screenHeight, score2, "Bot Score"),
             SizedBox(height: screenHeight * 0.05),
             Container(
               height: screenHeight * 0.10,
@@ -142,7 +142,12 @@ Widget _bigContainer(
   );
 }
 
-Widget _ContainerSet(double screenWidth, double screenHeight, int score) {
+Widget _ContainerSet(
+  double screenWidth,
+  double screenHeight,
+  int score,
+  String text,
+) {
   return Container(
     height: screenHeight * 0.25,
     width: screenWidth * 0.9,
@@ -153,41 +158,14 @@ Widget _ContainerSet(double screenWidth, double screenHeight, int score) {
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 30),
-          child: Row(
-            children: [
-              _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: '',
-                color: const Color(0xFFD19837),
-                height_: 0.07,
-                width_: 0.21,
-                font_size: 0.10,
-              ),
-              SizedBox(width: screenWidth * 0.05),
-              _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: '',
-                color: const Color(0xFFD19837),
-                height_: 0.07,
-                width_: 0.21,
-                font_size: 0.10,
-              ),
-              SizedBox(width: screenWidth * 0.05),
-              _bigContainer(
-                screenWidth,
-                screenHeight,
-                text: '',
-                color: const Color(0xFFD19837),
-                height_: 0.07,
-                width_: 0.21,
-                font_size: 0.10,
-              ),
-            ],
-          ),
+        _bigContainer(
+          screenWidth,
+          screenHeight,
+          text: text,
+          color: const Color(0x40D9D9D9),
+          height_: 0.10,
+          width_: 0.85,
+          font_size: 0.12,
         ),
         SizedBox(height: screenHeight * 0.02),
         _bigContainer(
